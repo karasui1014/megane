@@ -183,26 +183,26 @@
         .num-ctrl {
             display: flex;
             align-items: center;
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
             border-radius: var(--radius-sm);
             overflow: hidden;
-            background: var(--card);
+            background: #F8FAFC;
         }
         .num-ctrl input[type="number"] {
             border: none;
             border-radius: 0;
             text-align: center;
-            padding: 6px 2px;
-            font-size: 13px;
-            font-weight: 600;
+            padding: 8px 2px;
+            font-size: 15px;
+            font-weight: 700;
             font-variant-numeric: tabular-nums;
             min-width: 0;
             flex: 1;
         }
         .num-ctrl input:focus { box-shadow: none; }
         .num-btn {
-            width: 28px; min-width: 28px; height: 32px;
-            background: #F8FAFC;
+            width: 32px; min-width: 32px; height: 38px;
+            background: #EEF2F7;
             border: none;
             cursor: pointer;
             font-size: 16px;
@@ -915,6 +915,7 @@
                 <button class="quiz-cat-btn" onclick="selectCategory('hyperopia', this)">遠視<span class="quiz-badge badge-hyper">応用</span></button>
                 <button class="quiz-cat-btn" onclick="selectCategory('astig', this)">乱視<span class="quiz-badge badge-astig">応用</span></button>
                 <button class="quiz-cat-btn" onclick="selectCategory('presbyopia', this)">老視<span class="quiz-badge badge-presby">上級</span></button>
+                <button class="quiz-cat-btn" onclick="selectCategory('aniso', this)">不同視<span class="quiz-badge badge-myopia">応用</span></button>
             </div>
             <button class="btn btn-primary" onclick="startQuiz()">問題を開始する</button>
         </div>
@@ -1593,6 +1594,26 @@ const QUESTION_BANK = [
         choices: ['遠用単焦点（運転・遠方用）', '中近両用（PC〜手元の中間距離重視）', '遠近両用のADDを上げるだけ'],
         correct: 1,
         reason: 'デスクワーク中心かつ「PC画面が疲れる」という主訴には中近両用レンズが最適です。中近両用は中距離（PC画面約60cm）〜近方（読書30〜40cm）に最適化された設計で、デスクワークでの眼精疲労を大幅に軽減できます。'
+    },
+
+    // ---- 不同視 ----
+    {
+        category: 'aniso',
+        typeBadge: '不同視', badgeClass: 'badge-myopia',
+        scenario: '42歳・女性。KB：右 -1.00、左 -3.50（使用5年）\nKBでの矯正視力：右 0.9、左 0.7\n完全矯正値：右 -1.25、左 -4.25\n主訴A：遠方視力低下、主訴B：頭痛・肩こり',
+        question: '不同視（左右の度数差が大きい）のKB有り処方で最も重要な対応はどれですか？',
+        choices: ['完全矯正値の通り右 -1.25、左 -4.25 で処方する', 'KB度数を基準に変化量を最小限にとどめる', '左右の差を均等にするため右を強くする'],
+        correct: 1,
+        reason: '不同視は左右の度数差が大きいため、一度に大きく変えると両眼視・プリズム効果の変化で不快感が出やすいです。特にKB使用5年の場合は現用眼鏡に順応しているため、KB度数を基準にして変化量を最小限にとどめることが原則です。'
+    },
+    {
+        category: 'aniso',
+        typeBadge: '不同視', badgeClass: 'badge-myopia',
+        scenario: '38歳・男性。初めての眼鏡。\n完全矯正値：右 -0.50、左 -3.00\n裸眼視力：右 0.7、左 0.1\n主訴A：遠方視力低下（左目が特に見えにくい）',
+        question: '初回・不同視の処方方針として最も適切なものはどれですか？',
+        choices: ['完全矯正値をそのまま処方（右 -0.50 / 左 -3.00）', '度数差を縮めるため左を弱めに処方（右 -0.50 / 左 -2.25）', '右眼のみ処方して様子を見る'],
+        correct: 1,
+        reason: '初回・不同視の場合、度数差が2.50D以上あると左右の像の大きさの差（不等像視）による不快感が出やすいです。左 -3.00×0.75=-2.25 と弱めに処方して左右差を縮めることが重要です。'
     },
 ];
 
