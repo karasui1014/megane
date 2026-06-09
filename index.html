@@ -1030,12 +1030,7 @@ function setupLongPress() {
             const mx = parseFloat(input.max) ?? 20;
             let v = parseFloat(input.value) || 0;
             v = dir === 1 ? Math.min(v + s, mx) : Math.max(v - s, mn);
-            const fid = input.id || '';
-            if ((fid.includes('Sph') || fid.includes('Add')) && v > 0) {
-                input.value = '+' + v.toFixed(2);
-            } else {
-                input.value = v.toFixed(2);
-            }
+            input.value = v.toFixed(2);
         }
         function startPress(dir) {
             isLongPressing = true;
@@ -1656,20 +1651,20 @@ function showQuestion() {
     badge.textContent = q.typeBadge;
     badge.className = 'quiz-type-badge ' + q.badgeClass;
     document.getElementById('quizNum').textContent = `問 ${idx + 1} / ${total}`;
-    const lines = q.scenario.split('\n');
-    let html = '';
-    lines.forEach(line => {
-        if (line.startsWith('KB：') || line.startsWith('完全矯正値') || line.startsWith('裸眼視力') || line.startsWith('KBでの')) {
-            html += '<div style="background:white;border:1px solid #E2E8F0;border-radius:6px;padding:8px 12px;margin:4px 0;font-size:13px;"><strong>' + line + '</strong></div>';
-        } else if (line.startsWith('主訴')) {
-            html += '<div style="margin:4px 0;"><span style="background:#2563EB;color:white;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:700;">' + line + '</span></div>';
+    const scenLines = q.scenario.split('\n');
+    let scenHtml = '';
+    scenLines.forEach(line => {
+        if (line.startsWith('KB\uff1a') || line.startsWith('\u5b8c\u5168\u77ef\u6b63\u5024') || line.startsWith('\u88f8\u773c\u8996\u529b') || line.startsWith('KB\u3067\u306e')) {
+            scenHtml += '<div style="background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:8px 12px;margin:3px 0;font-size:13px;font-weight:600;">' + line + '</div>';
+        } else if (line.startsWith('\u4e3b\u8a34')) {
+            scenHtml += '<div style="margin:3px 0;"><span style="background:#2563EB;color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:700;">' + line + '</span></div>';
         } else if (line.trim() === '') {
-            html += '<br>';
+            scenHtml += '';
         } else {
-            html += '<div style="font-size:14px;font-weight:600;margin-bottom:4px;">' + line + '</div>';
+            scenHtml += '<div style="font-size:14px;font-weight:700;margin-bottom:6px;">' + line + '</div>';
         }
     });
-    document.getElementById('quizScenario').innerHTML = html;
+    document.getElementById('quizScenario').innerHTML = scenHtml;
     document.getElementById('quizQuestion').textContent = q.question;
 
     const labels = ['A', 'B', 'C'];
