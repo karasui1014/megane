@@ -1,1 +1,1721 @@
-https://github.com/karasui1014/megane/edit/main/index.html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>眼鏡処方計算ツール</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #F4F6F9;
+            --card: #FFFFFF;
+            --border: #E2E8F0;
+            --text-primary: #0F172A;
+            --text-secondary: #64748B;
+            --text-muted: #94A3B8;
+            --blue: #2563EB;
+            --blue-light: #EFF6FF;
+            --blue-mid: #DBEAFE;
+            --green: #059669;
+            --green-light: #ECFDF5;
+            --amber: #D97706;
+            --amber-light: #FFFBEB;
+            --red: #DC2626;
+            --red-light: #FEF2F2;
+            --purple: #7C3AED;
+            --purple-light: #F5F3FF;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.05);
+            --shadow-lg: 0 10px 30px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.06);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ===== HEADER ===== */
+        .site-header {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+        .header-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-icon {
+            width: 36px; height: 36px;
+            background: var(--blue);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+        }
+        .site-title { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+        .site-subtitle { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+        .header-right { display: flex; align-items: center; gap: 8px; }
+
+        /* ===== TABS ===== */
+        .tabs-bar {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+        }
+        .tabs-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            gap: 0;
+        }
+        .tab-btn {
+            padding: 14px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+        .tab-btn:hover { color: var(--blue); }
+        .tab-btn.active {
+            color: var(--blue);
+            border-bottom-color: var(--blue);
+            font-weight: 600;
+        }
+
+        /* ===== LAYOUT ===== */
+        .page-content { display: none; }
+        .page-content.active { display: block; }
+
+        .main-wrap {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+        @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+
+        /* ===== CARD ===== */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .card-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--text-secondary);
+            border-left: 3px solid var(--blue);
+            padding-left: 10px;
+            margin-bottom: 16px;
+        }
+        .card-title.green  { border-color: var(--green); }
+        .card-title.amber  { border-color: var(--amber); }
+        .card-title.purple { border-color: var(--purple); }
+        .card-title.red    { border-color: var(--red); }
+
+        /* ===== FORM ===== */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .form-group { display: flex; flex-direction: column; gap: 4px; }
+        label.field-label { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .04em; }
+        input[type="number"], input[type="text"], select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--card);
+            color: var(--text-primary);
+            transition: border-color .2s, box-shadow .2s;
+            -webkit-appearance: none;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+        }
+
+        /* ===== NUMBER INPUT WITH ±  ===== */
+        .num-row {
+            display: grid;
+            gap: 8px;
+        }
+        .num-row-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .num-row-5 { grid-template-columns: repeat(5, 1fr); }
+        .num-group { display: flex; flex-direction: column; gap: 4px; }
+        .num-ctrl {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            background: var(--card);
+        }
+        .num-ctrl input[type="number"] {
+            border: none;
+            border-radius: 0;
+            text-align: center;
+            padding: 6px 2px;
+            font-size: 13px;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            min-width: 0;
+            flex: 1;
+        }
+        .num-ctrl input:focus { box-shadow: none; }
+        .num-btn {
+            width: 28px; min-width: 28px; height: 32px;
+            background: #F8FAFC;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            transition: background .15s, color .15s;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .num-btn:hover { background: var(--blue-mid); color: var(--blue); }
+        .num-btn:active { background: var(--blue); color: #fff; }
+        .axis-row {
+            display: flex; align-items: center; gap: 4px;
+        }
+        .axis-row input {
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+            font-weight: 600;
+            font-size: 13px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 6px 4px;
+        }
+        .axis-btn {
+            width: 28px; height: 32px;
+            background: #F8FAFC;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            transition: background .15s;
+        }
+        .axis-btn:hover { background: var(--blue-mid); color: var(--blue); }
+
+        /* ===== CHECKBOX LIST ===== */
+        .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .check-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .check-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: background .15s, border-color .15s;
+            user-select: none;
+        }
+        .check-item:hover { background: var(--blue-light); border-color: var(--blue); }
+        .check-item input[type="checkbox"] { accent-color: var(--blue); width: 14px; height: 14px; }
+        .check-item span { font-size: 12px; flex: 1; }
+        .priority-badge {
+            width: 20px; height: 20px; border-radius: 50%;
+            font-size: 10px; font-weight: 800;
+            display: none; align-items: center; justify-content: center; color: #fff;
+        }
+        .badge-a { background: var(--red); }
+        .badge-b { background: var(--amber); }
+        .badge-c { background: var(--green); }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            font-size: 13px; font-weight: 600;
+            cursor: pointer; border: none;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: var(--blue); color: #fff;
+            box-shadow: 0 2px 8px rgba(37,99,235,.25);
+        }
+        .btn-primary:hover { background: #1D4ED8; box-shadow: 0 4px 16px rgba(37,99,235,.35); }
+        .btn-success { background: var(--green); color: #fff; }
+        .btn-success:hover { background: #047857; }
+        .btn-danger { background: none; border: 1px solid var(--red); color: var(--red); }
+        .btn-danger:hover { background: var(--red-light); }
+        .btn-ghost { background: none; border: 1px solid var(--border); color: var(--text-secondary); }
+        .btn-ghost:hover { background: var(--bg); }
+        .btn-lg { padding: 13px 24px; font-size: 14px; border-radius: 10px; width: 100%; }
+        .btn-row { display: flex; gap: 10px; }
+
+        /* ===== RESULTS ===== */
+        .result-empty {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-muted);
+        }
+        .result-empty .icon { font-size: 36px; margin-bottom: 12px; }
+        .result-empty p { font-size: 13px; }
+        .rx-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .rx-eye {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+        }
+        .rx-eye-label { font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+        .rx-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; border-bottom: 1px solid var(--border); }
+        .rx-row:last-child { border-bottom: none; }
+        .rx-key { font-size: 12px; color: var(--text-secondary); }
+        .rx-val { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+        .rx-val.positive { color: var(--amber); }
+        .rx-val.negative { color: var(--blue); }
+        .rx-val.add-val { color: var(--purple); }
+        .add-banner {
+            background: var(--purple-light);
+            border: 1px solid #C4B5FD;
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 16px;
+        }
+        .add-banner-label { font-size: 12px; font-weight: 600; color: var(--purple); }
+        .add-banner-val { font-size: 20px; font-weight: 800; color: var(--purple); font-variant-numeric: tabular-nums; }
+        .lens-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+        .lens-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px; }
+        .lens-name { font-size: 13px; font-weight: 700; }
+        .lens-note { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .lens-distance { font-size: 11px; background: var(--blue-mid); color: var(--blue); padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+        .lens-data { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .lens-eye-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+        .advice-item {
+            background: var(--blue-light);
+            border-left: 3px solid var(--blue);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        .hint-box {
+            padding: 10px 14px; border-radius: var(--radius-sm); font-size: 12px; margin-bottom: 12px;
+        }
+        .hint-success { background: var(--green-light); border: 1px solid #A7F3D0; color: var(--green); }
+        .hint-warning { background: var(--amber-light); border: 1px solid #FDE68A; color: var(--amber); }
+        .hint-info { background: var(--blue-light); border: 1px solid var(--blue-mid); color: var(--blue); }
+        .changes-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+        .changes-table th, .changes-table td { padding: 6px 10px; border: 1px solid var(--border); text-align: center; }
+        .changes-table th { background: var(--bg); font-weight: 600; color: var(--text-secondary); }
+        .change-pos { color: var(--green); font-weight: 700; }
+        .change-neg { color: var(--red); font-weight: 700; }
+
+        /* ===== HISTORY ===== */
+        #historyPanel { display: none; }
+        .history-item {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: start;
+        }
+
+        /* ===== HIDDEN ===== */
+        .hidden { display: none !important; }
+
+        /* ===== PRACTICE TAB ===== */
+        .quiz-wrap { max-width: 800px; margin: 0 auto; padding: 24px; }
+        .quiz-cats {
+            display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px;
+        }
+        .quiz-cat-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            font-size: 12px; font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            color: var(--text-secondary);
+        }
+        .quiz-cat-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+        .quiz-cat-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+        .quiz-badge {
+            display: inline-block;
+            padding: 2px 8px; border-radius: 10px;
+            font-size: 10px; font-weight: 700;
+            margin-left: 6px;
+        }
+        .badge-myopia  { background: #DBEAFE; color: var(--blue); }
+        .badge-hyper   { background: #ECFDF5; color: var(--green); }
+        .badge-astig   { background: #FEF3C7; color: var(--amber); }
+        .badge-presby  { background: #F5F3FF; color: var(--purple); }
+        .badge-all     { background: #F1F5F9; color: var(--text-secondary); }
+
+        .quiz-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+        .quiz-meta {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+        }
+        .quiz-type-badge {
+            padding: 3px 10px; border-radius: 12px;
+            font-size: 11px; font-weight: 700;
+        }
+        .quiz-num { font-size: 12px; color: var(--text-muted); margin-left: auto; }
+        .quiz-scenario {
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--blue);
+        }
+        .quiz-question { font-size: 15px; font-weight: 700; margin-bottom: 16px; color: var(--text-primary); }
+        .choices { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .choice-btn {
+            width: 100%; text-align: left;
+            padding: 14px 18px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--card);
+            font-size: 14px; font-weight: 500;
+            cursor: pointer;
+            transition: all .2s;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .choice-btn:hover:not(:disabled) { border-color: var(--blue); background: var(--blue-light); }
+        .choice-label {
+            width: 28px; height: 28px; border-radius: 50%;
+            border: 2px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700; flex-shrink: 0;
+            transition: all .2s;
+        }
+        .choice-btn:hover:not(:disabled) .choice-label { border-color: var(--blue); color: var(--blue); }
+        .choice-btn.correct { border-color: var(--green); background: var(--green-light); }
+        .choice-btn.correct .choice-label { border-color: var(--green); background: var(--green); color: #fff; }
+        .choice-btn.wrong { border-color: var(--red); background: var(--red-light); }
+        .choice-btn.wrong .choice-label { border-color: var(--red); background: var(--red); color: #fff; }
+        .choice-btn.show-answer { border-color: var(--green); background: var(--green-light); opacity: .7; }
+        .choice-btn:disabled { cursor: default; }
+        .result-panel { display: none; }
+        .result-panel.visible { display: block; }
+        .result-correct {
+            background: var(--green-light);
+            border: 1px solid #A7F3D0;
+            border-radius: var(--radius-sm);
+            padding: 16px; margin-bottom: 16px;
+        }
+        .result-wrong {
+            background: var(--red-light);
+            border: 1px solid #FECACA;
+            border-radius: var(--radius-sm);
+            padding: 16px; margin-bottom: 16px;
+        }
+        .result-label { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+        .result-correct .result-label { color: var(--green); }
+        .result-wrong .result-label { color: var(--red); }
+        .result-reason { font-size: 13px; line-height: 1.8; color: var(--text-primary); }
+        .quiz-progress {
+            display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+        }
+        .progress-bar-wrap {
+            flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
+        }
+        .progress-bar { height: 100%; background: var(--blue); border-radius: 3px; transition: width .4s; }
+        .score-display { font-size: 13px; font-weight: 700; color: var(--blue); white-space: nowrap; }
+        .stats-card {
+            background: var(--bg); border-radius: var(--radius-sm); padding: 16px;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: center;
+            margin-bottom: 16px;
+        }
+        .stat-num { font-size: 24px; font-weight: 800; }
+        .stat-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .stat-correct .stat-num { color: var(--green); }
+        .stat-wrong .stat-num { color: var(--red); }
+        .stat-total .stat-num { color: var(--blue); }
+        .quiz-end-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 32px; text-align: center;
+        }
+        .quiz-end-icon { font-size: 48px; margin-bottom: 12px; }
+        .quiz-end-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+        .quiz-end-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; }
+        .rank-badge {
+            display: inline-block;
+            font-size: 28px; font-weight: 900;
+            padding: 12px 28px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+        }
+        .rank-s { background: #FEF3C7; color: var(--amber); }
+        .rank-a { background: var(--green-light); color: var(--green); }
+        .rank-b { background: var(--blue-light); color: var(--blue); }
+        .rank-c { background: var(--red-light); color: var(--red); }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+    <div class="header-inner">
+        <div class="header-left">
+            <div class="logo-icon">👓</div>
+            <div>
+                <div class="site-title">眼鏡処方計算ツール</div>
+                <div class="site-subtitle">傾聴式測定理論 / 加入度数対応</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="btn btn-ghost" onclick="toggleHistory()">履歴</button>
+            <button class="btn btn-danger" onclick="clearAllData()">全削除</button>
+        </div>
+    </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs-bar">
+    <div class="tabs-inner">
+        <button class="tab-btn active" onclick="switchTab('calc', this)">処方計算</button>
+        <button class="tab-btn" onclick="switchTab('practice', this)">練習問題</button>
+    </div>
+</div>
+
+<!-- ========== PAGE: 処方計算 ========== -->
+<div id="page-calc" class="page-content active">
+    <div class="main-wrap">
+
+        <!-- 履歴パネル -->
+        <div id="historyPanel" class="card" style="margin-bottom:16px;">
+            <div class="card-title">処方履歴</div>
+            <div id="historyContent"></div>
+        </div>
+
+        <div class="two-col">
+
+            <!-- 左：入力 -->
+            <div>
+
+                <!-- 基本情報 -->
+                <div class="card">
+                    <div class="card-title">基本情報</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="field-label">年齢</label>
+                            <input type="number" id="age" min="10" max="100" placeholder="例：45" onchange="updateAgeBasedAddPower()">
+                        </div>
+                        <div class="form-group">
+                            <label class="field-label">患者名（任意）</label>
+                            <input type="text" id="patientName" placeholder="田中太郎">
+                        </div>
+                    </div>
+                    <div style="margin-bottom:12px;">
+                        <label class="field-label" style="display:block;margin-bottom:8px;">主訴（選択順でA→B→C）</label>
+                        <div class="check-grid">
+                            <label class="check-item"><input type="checkbox" id="complaint1"><span>遠方視力低下</span><span id="priority1" class="priority-badge"></span></label>
+                            <label class="check-item"><input type="checkbox" id="complaint2"><span>近方視力低下</span><span id="priority2" class="priority-badge"></span></label>
+                            <label class="check-item"><input type="checkbox" id="complaint3"><span>眼精疲労</span><span id="priority3" class="priority-badge"></span></label>
+                            <label class="check-item"><input type="checkbox" id="complaint4"><span>ピント合わせ困難</span><span id="priority4" class="priority-badge"></span></label>
+                            <label class="check-item"><input type="checkbox" id="complaint5"><span>頭痛・肩こり</span><span id="priority5" class="priority-badge"></span></label>
+                            <label class="check-item"><input type="checkbox" id="complaint6"><span>夜間運転困難</span><span id="priority6" class="priority-badge"></span></label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="field-label" style="display:block;margin-bottom:8px;">生活様式</label>
+                        <div class="check-grid check-grid-3">
+                            <label class="check-item"><input type="checkbox" id="lifestyle1"><span>🚗 運転</span></label>
+                            <label class="check-item"><input type="checkbox" id="lifestyle2"><span>💻 デスク</span></label>
+                            <label class="check-item"><input type="checkbox" id="lifestyle3"><span>📚 読書</span></label>
+                            <label class="check-item"><input type="checkbox" id="lifestyle4"><span>⚽ スポーツ</span></label>
+                            <label class="check-item"><input type="checkbox" id="lifestyle5"><span>🏠 家事</span></label>
+                            <label class="check-item"><input type="checkbox" id="lifestyle6"><span>🧵 手芸</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 裸眼視力 -->
+                <div class="card">
+                    <div class="card-title green">裸眼視力</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="field-label">右眼 (OD)</label>
+                            <select id="nakedVisionRight">
+                                <option value="">選択</option>
+                                <option>0.1</option><option>0.2</option><option>0.3</option><option>0.4</option><option>0.5</option>
+                                <option>0.6</option><option>0.7</option><option>0.8</option><option>0.9</option><option>1.0</option>
+                                <option>1.2</option><option>1.5</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="field-label">左眼 (OS)</label>
+                            <select id="nakedVisionLeft">
+                                <option value="">選択</option>
+                                <option>0.1</option><option>0.2</option><option>0.3</option><option>0.4</option><option>0.5</option>
+                                <option>0.6</option><option>0.7</option><option>0.8</option><option>0.9</option><option>1.0</option>
+                                <option>1.2</option><option>1.5</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 現用眼鏡 (KB) -->
+                <div class="card">
+                    <div class="card-title purple">現用眼鏡 (KB)</div>
+                    <label class="check-item" style="margin-bottom:12px;width:fit-content;">
+                        <input type="checkbox" id="hasKB" onchange="toggleKBSection(this)">
+                        <span style="font-weight:600;">現用眼鏡あり</span>
+                    </label>
+                    <div id="kbSection" class="hidden">
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label class="field-label">使用年数</label>
+                            <input type="number" id="kbUsageYears" min="0" max="10" placeholder="0〜10年" style="max-width:120px;">
+                        </div>
+                        <div style="margin-bottom:12px;">
+                            <div class="field-label" style="margin-bottom:8px;">右眼 (OD)</div>
+                            <div class="num-row num-row-5">
+                                <div class="num-group">
+                                    <label class="field-label">SPH</label>
+                                    <div class="num-ctrl" data-field="kbRightSph">
+                                        <button class="num-btn minus-btn">−</button>
+                                        <input type="number" step="0.25" min="-20" max="20" id="kbRightSph" placeholder="0.00">
+                                        <button class="num-btn plus-btn">＋</button>
+                                    </div>
+                                </div>
+                                <div class="num-group">
+                                    <label class="field-label">CYL</label>
+                                    <div class="num-ctrl" data-field="kbRightCyl">
+                                        <button class="num-btn minus-btn">−</button>
+                                        <input type="number" step="0.25" min="-6" max="0" id="kbRightCyl" placeholder="0.00">
+                                        <button class="num-btn plus-btn">＋</button>
+                                    </div>
+                                </div>
+                                <div class="num-group">
+                                    <label class="field-label">AXIS</label>
+                                    <div class="axis-row">
+                                        <button class="axis-btn" onclick="adjustAxis('kbRightAxis',-5)">−</button>
+                                        <input type="number" min="0" max="180" step="5" id="kbRightAxis" placeholder="0">
+                                        <button class="axis-btn" onclick="adjustAxis('kbRightAxis',5)">＋</button>
+                                    </div>
+                                </div>
+                                <div class="num-group">
+                                    <label class="field-label">ADD</label>
+                                    <div class="num-ctrl" data-field="kbRightAdd">
+                                        <button class="num-btn minus-btn">−</button>
+                                        <input type="number" step="0.25" min="0" max="3" id="kbRightAdd" placeholder="0.00">
+                                        <button class="num-btn plus-btn">＋</button>
+                                    </div>
+                                </div>
+                                <div class="num-group">
+                                    <label class="field-label">視力</label>
+                                    <select id="kbRightVision">
+                                        <option value="">−</option>
+                                        <option>0.1</option><option>0.2</option><option>0.3</option><option>0.4</option><option>0.5</option>
+                                        <option>0.6</option><option>0.7</option><option>0.8</option><option>0.9</option><option>1.0</option>
+                                        <option>1.2</option><option>1.5</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="field-label" style="margin-bottom:8px;">左眼 (OS)</div>
+                            <div class="num-row num-row-5">
+                                <div class="num-group">
+                                    <label class="field-label">SPH</label>
+                                    <div class="num-ctrl" data-field="kbLeftSph">
+                                        <button class="num-btn minus-btn">−</button>
+                                        <input type="number" step="0.25" min="-20" max="20" id="kbLeftSph" placeholder="0.00">
+                                        <button class="num-btn plus-btn">＋</button>
+                                    </div>
+                                </div>
+                                <div class="num-group">
+                                    <label class="field-label">CYL</label>
+                                    <div class="num-ctrl" data-field="kbLeftCyl">
+                                        <button class="num-btn minus-btn">−</button>
+                                        <input type="number" step="0.25" min="-6" max="0" id="kbLeftCyl" placeholder="0.00">
+                                        <button class="num-btn plus-btn">＋</button>
+                                    </div>
+                                </div>
+                                <div class="num-group">
+                                    <label class="field-label">AXIS</label>
+                                    <div class="axis-row">
+                                        <button class="axis-btn" onclick="adjustAxis('kbLeftAxis',-5)">−</button>
+                                        <input type="number" min="0" max="180" step="5" id="kbLeftAxis" placeholder="0">
+                                        <button class="axis-btn" onclick="adjustAxis('kbLeftAxis',5)">＋</button>
+                                    </div>
+                                </div>
+                                <div class="num-group">
+                                    <label class="field-label">ADD</label>
+                                    <div class="num-ctrl" data-field="kbLeftAdd">
+                                        <button class="num-btn minus-btn">−</button>
+                                        <input type="number" step="0.25" min="0" max="3" id="kbLeftAdd" placeholder="0.00">
+                                        <button class="num-btn plus-btn">＋</button>
+                                    </div>
+                                </div>
+                                <div class="num-group">
+                                    <label class="field-label">視力</label>
+                                    <select id="kbLeftVision">
+                                        <option value="">−</option>
+                                        <option>0.1</option><option>0.2</option><option>0.3</option><option>0.4</option><option>0.5</option>
+                                        <option>0.6</option><option>0.7</option><option>0.8</option><option>0.9</option><option>1.0</option>
+                                        <option>1.2</option><option>1.5</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- レフ値 -->
+                <div class="card">
+                    <div class="card-title">レフ値</div>
+                    <div style="margin-bottom:14px;">
+                        <div class="field-label" style="margin-bottom:8px;">右眼 (OD)</div>
+                        <div class="num-row num-row-3">
+                            <div class="num-group">
+                                <label class="field-label">SPH</label>
+                                <div class="num-ctrl" data-field="refRightSph">
+                                    <button class="num-btn minus-btn">−</button>
+                                    <input type="number" step="0.25" min="-20" max="20" id="refRightSph" placeholder="0.00">
+                                    <button class="num-btn plus-btn">＋</button>
+                                </div>
+                            </div>
+                            <div class="num-group">
+                                <label class="field-label">CYL</label>
+                                <div class="num-ctrl" data-field="refRightCyl">
+                                    <button class="num-btn minus-btn">−</button>
+                                    <input type="number" step="0.25" min="-6" max="0" id="refRightCyl" placeholder="0.00">
+                                    <button class="num-btn plus-btn">＋</button>
+                                </div>
+                            </div>
+                            <div class="num-group">
+                                <label class="field-label">AXIS</label>
+                                <div class="axis-row">
+                                    <button class="axis-btn" onclick="adjustAxis('refRightAxis',-5)">−</button>
+                                    <input type="number" min="0" max="180" step="5" id="refRightAxis" placeholder="0">
+                                    <button class="axis-btn" onclick="adjustAxis('refRightAxis',5)">＋</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="field-label" style="margin-bottom:8px;">左眼 (OS)</div>
+                        <div class="num-row num-row-3">
+                            <div class="num-group">
+                                <label class="field-label">SPH</label>
+                                <div class="num-ctrl" data-field="refLeftSph">
+                                    <button class="num-btn minus-btn">−</button>
+                                    <input type="number" step="0.25" min="-20" max="20" id="refLeftSph" placeholder="0.00">
+                                    <button class="num-btn plus-btn">＋</button>
+                                </div>
+                            </div>
+                            <div class="num-group">
+                                <label class="field-label">CYL</label>
+                                <div class="num-ctrl" data-field="refLeftCyl">
+                                    <button class="num-btn minus-btn">−</button>
+                                    <input type="number" step="0.25" min="-6" max="0" id="refLeftCyl" placeholder="0.00">
+                                    <button class="num-btn plus-btn">＋</button>
+                                </div>
+                            </div>
+                            <div class="num-group">
+                                <label class="field-label">AXIS</label>
+                                <div class="axis-row">
+                                    <button class="axis-btn" onclick="adjustAxis('refLeftAxis',-5)">−</button>
+                                    <input type="number" min="0" max="180" step="5" id="refLeftAxis" placeholder="0">
+                                    <button class="axis-btn" onclick="adjustAxis('refLeftAxis',5)">＋</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 完全矯正値 -->
+                <div class="card">
+                    <div class="card-title amber">完全矯正値</div>
+                    <div id="ageAddHint" class="hint-box hint-warning hidden" style="margin-bottom:12px;"></div>
+                    <div style="margin-bottom:14px;">
+                        <div class="field-label" style="margin-bottom:8px;">右眼 (OD)</div>
+                        <div class="num-row num-row-5">
+                            <div class="num-group">
+                                <label class="field-label">SPH</label>
+                                <div class="num-ctrl" data-field="corrRightSph">
+                                    <button class="num-btn minus-btn">−</button>
+                                    <input type="number" step="0.25" min="-20" max="20" id="corrRightSph" placeholder="0.00">
+                                    <button class="num-btn plus-btn">＋</button>
+                                </div>
+                            </div>
+                            <div class="num-group">
+                                <label class="field-label">CYL</label>
+                                <div class="num-ctrl" data-field="corrRightCyl">
+                                    <button class="num-btn minus-btn">−</button>
+                                    <input type="number" step="0.25" min="-6" max="0" id="corrRightCyl" placeholder="0.00">
+                                    <button class="num-btn plus-btn">＋</button>
+                                </div>
+                            </div>
+                            <div class="num-group">
+                                <label class="field-label">AXIS</label>
+                                <div class="axis-row">
+                                    <button class="axis-btn" onclick="adjustAxis('corrRightAxis',-5)">−</button>
+                                    <input type="number" min="0" max="180" step="5" id="corrRightAxis" placeholder="0">
+                                    <button class="axis-btn" onclick="adjustAxis('corrRightAxis',5)">＋</button>
+                                </div>
+                            </div>
+                            <div class="num-group">
+                                <label class="field-label">ADD</label>
+                                <div class="num-ctrl" data-field="corrRightAdd">
+                                    <button class="num-btn minus-btn">−</button>
+                                    <input type="number" step="0.25" min="0" max="3" id="corrRightAdd" placeholder="0.00">
+                                    <button class="num-btn plus-btn">＋</button>
+                                </div>
+                            </div>
+                            <div class="num-group">
+                                <label class="field-label">視力</label>
+                                <select id="corrRightVision">
+                                    <option value="">−</option>
+                                    <option>0.1</option><option>0.2</option><option>0.3</option><option>0.4</option><option>0.5</option>
+                                    <option>0.6</option><option>0.7</option><option>0.8</option><option>0.9</option><option>1.0</option>
+                                    <option>1.2</option><option>1.5</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="field-label" style="margin-bottom:8px;">左眼 (OS)</div>
+                        <div class="num-row num-row-5">
+                            <div class="num-group">
+                                <label class="field-label">SPH</label>
+                                <div class="num-ctrl" data-field="corrLeftSph">
+                                    <button class="num-btn minus-btn">−</button>
+                                    <input type="number" step="0.25" min="-20" max="20" id="corrLeftSph" placeholder="0.00">
+                                    <button class="num-btn plus-btn">＋</button>
+                                </div>
+                            </div>
+                            <div class="num-group">
+                                <label class="field-label">CYL</label>
+                                <div class="num-ctrl" data-field="corrLeftCyl">
+                                    <button class="num-btn minus-btn">−</button>
+                                    <input type="number" step="0.25" min="-6" max="0" id="corrLeftCyl" placeholder="0.00">
+                                    <button class="num-btn plus-btn">＋</button>
+                                </div>
+                            </div>
+                            <div class="num-group">
+                                <label class="field-label">AXIS</label>
+                                <div class="axis-row">
+                                    <button class="axis-btn" onclick="adjustAxis('corrLeftAxis',-5)">−</button>
+                                    <input type="number" min="0" max="180" step="5" id="corrLeftAxis" placeholder="0">
+                                    <button class="axis-btn" onclick="adjustAxis('corrLeftAxis',5)">＋</button>
+                                </div>
+                            </div>
+                            <div class="num-group">
+                                <label class="field-label">ADD</label>
+                                <div class="num-ctrl" data-field="corrLeftAdd">
+                                    <button class="num-btn minus-btn">−</button>
+                                    <input type="number" step="0.25" min="0" max="3" id="corrLeftAdd" placeholder="0.00">
+                                    <button class="num-btn plus-btn">＋</button>
+                                </div>
+                            </div>
+                            <div class="num-group">
+                                <label class="field-label">視力</label>
+                                <select id="corrLeftVision">
+                                    <option value="">−</option>
+                                    <option>0.1</option><option>0.2</option><option>0.3</option><option>0.4</option><option>0.5</option>
+                                    <option>0.6</option><option>0.7</option><option>0.8</option><option>0.9</option><option>1.0</option>
+                                    <option>1.2</option><option>1.5</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ボタン -->
+                <div class="btn-row">
+                    <button class="btn btn-primary btn-lg" style="flex:1;" onclick="calculatePrescription()">処方計算を実行</button>
+                    <button class="btn btn-success btn-lg" style="flex:0 0 auto;padding:13px 20px;" onclick="savePrescription()">保存</button>
+                </div>
+
+            </div><!-- end left col -->
+
+            <!-- 右：結果 -->
+            <div id="resultsColumn">
+                <div class="card">
+                    <div class="result-empty">
+                        <div class="icon">📊</div>
+                        <p style="font-weight:700;margin-bottom:6px;">処方計算システム</p>
+                        <p>左側に情報を入力して「処方計算を実行」を押してください</p>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- end two-col -->
+    </div><!-- end main-wrap -->
+</div><!-- end page-calc -->
+
+<!-- ========== PAGE: 練習問題 ========== -->
+<div id="page-practice" class="page-content">
+    <div class="quiz-wrap">
+        <div class="card" style="margin-bottom:20px;">
+            <div class="card-title">カテゴリを選択</div>
+            <div class="quiz-cats">
+                <button class="quiz-cat-btn active" onclick="selectCategory('all', this)">すべて<span class="quiz-badge badge-all">ランダム</span></button>
+                <button class="quiz-cat-btn" onclick="selectCategory('myopia', this)">近視<span class="quiz-badge badge-myopia">基礎</span></button>
+                <button class="quiz-cat-btn" onclick="selectCategory('hyperopia', this)">遠視<span class="quiz-badge badge-hyper">応用</span></button>
+                <button class="quiz-cat-btn" onclick="selectCategory('astig', this)">乱視<span class="quiz-badge badge-astig">応用</span></button>
+                <button class="quiz-cat-btn" onclick="selectCategory('presbyopia', this)">老視<span class="quiz-badge badge-presby">上級</span></button>
+            </div>
+            <button class="btn btn-primary" onclick="startQuiz()">問題を開始する</button>
+        </div>
+
+        <!-- 進捗 -->
+        <div id="quizProgressArea" class="hidden">
+            <div class="quiz-progress">
+                <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+                <div class="score-display" id="scoreDisplay">0 / 0</div>
+            </div>
+        </div>
+
+        <!-- 問題カード -->
+        <div id="quizArea" class="hidden">
+            <div class="quiz-card">
+                <div class="quiz-meta">
+                    <span class="quiz-type-badge" id="quizTypeBadge"></span>
+                    <span class="quiz-num" id="quizNum"></span>
+                </div>
+                <div class="quiz-scenario" id="quizScenario"></div>
+                <div class="quiz-question" id="quizQuestion"></div>
+                <div class="choices" id="choicesArea"></div>
+                <div class="result-panel" id="resultPanel">
+                    <div id="resultBox"></div>
+                    <button class="btn btn-primary" onclick="nextQuestion()" style="width:100%;margin-top:8px;" id="nextBtn">次の問題へ →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 結果画面 -->
+        <div id="quizEndArea" class="hidden">
+            <div class="quiz-end-card">
+                <div class="quiz-end-icon" id="endIcon"></div>
+                <div class="quiz-end-title" id="endTitle"></div>
+                <div class="quiz-end-sub" id="endSub"></div>
+                <div class="rank-badge" id="rankBadge"></div>
+                <div class="stats-card">
+                    <div class="stat-total"><div class="stat-num" id="statTotal">0</div><div class="stat-label">問題数</div></div>
+                    <div class="stat-correct"><div class="stat-num" id="statCorrect">0</div><div class="stat-label">正解</div></div>
+                    <div class="stat-wrong"><div class="stat-num" id="statWrong">0</div><div class="stat-label">不正解</div></div>
+                </div>
+                <div class="btn-row" style="justify-content:center;">
+                    <button class="btn btn-primary" onclick="startQuiz()">もう一度挑戦</button>
+                    <button class="btn btn-ghost" onclick="switchTab('calc', document.querySelector('.tab-btn'))">処方計算へ戻る</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+// ===========================
+// GLOBAL STATE
+// ===========================
+let chiefComplaints = [];
+let complaintsPriority = {};
+const maxComplaints = 3;
+let longPressInterval = null, longPressTimeout = null, isLongPressing = false;
+let prescriptionHistory = [];
+try { prescriptionHistory = JSON.parse(localStorage.getItem('prescriptionHistory')) || []; } catch(e) {}
+
+// ===========================
+// TAB SWITCHING
+// ===========================
+function switchTab(tab, btn) {
+    document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + tab).classList.add('active');
+    if (btn) btn.classList.add('active');
+    else {
+        const btns = document.querySelectorAll('.tab-btn');
+        if (tab === 'calc') btns[0].classList.add('active');
+        else btns[1].classList.add('active');
+    }
+}
+
+// ===========================
+// KB SECTION TOGGLE
+// ===========================
+function toggleKBSection(cb) {
+    document.getElementById('kbSection').classList.toggle('hidden', !cb.checked);
+}
+
+// ===========================
+// AXIS ADJUST
+// ===========================
+function adjustAxis(id, inc) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    let v = parseInt(el.value) || 0;
+    v += inc;
+    if (v < 0) v = 175; else if (v > 180) v = 0;
+    el.value = v;
+}
+
+// ===========================
+// LONG PRESS ± BUTTONS
+// ===========================
+function setupLongPress() {
+    document.querySelectorAll('.num-ctrl').forEach(ctrl => {
+        const field = ctrl.dataset.field;
+        if (!field) return;
+        const input = document.getElementById(field);
+        const minus = ctrl.querySelector('.minus-btn');
+        const plus  = ctrl.querySelector('.plus-btn');
+        if (!input || !minus || !plus) return;
+
+        function step(dir) {
+            const s = parseFloat(input.step) || 0.25;
+            const mn = parseFloat(input.min) ?? -20;
+            const mx = parseFloat(input.max) ?? 20;
+            let v = parseFloat(input.value) || 0;
+            v = dir === 1 ? Math.min(v + s, mx) : Math.max(v - s, mn);
+            input.value = v.toFixed(2);
+        }
+        function startPress(dir) {
+            isLongPressing = true;
+            step(dir);
+            longPressTimeout = setTimeout(() => {
+                if (isLongPressing) longPressInterval = setInterval(() => step(dir), 100);
+            }, 500);
+        }
+        function stopPress() {
+            isLongPressing = false;
+            clearTimeout(longPressTimeout);
+            clearInterval(longPressInterval);
+        }
+        minus.addEventListener('mousedown', e => { e.preventDefault(); startPress(-1); });
+        plus.addEventListener('mousedown',  e => { e.preventDefault(); startPress(1); });
+        minus.addEventListener('touchstart', e => { e.preventDefault(); startPress(-1); }, {passive:false});
+        plus.addEventListener('touchstart',  e => { e.preventDefault(); startPress(1);  }, {passive:false});
+        document.addEventListener('mouseup', stopPress);
+        document.addEventListener('touchend', stopPress);
+    });
+}
+
+// ===========================
+// CHIEF COMPLAINT
+// ===========================
+function setupComplaints() {
+    for (let i = 1; i <= 6; i++) {
+        const cb = document.getElementById('complaint' + i);
+        if (!cb) continue;
+        cb.addEventListener('change', () => handleComplaintChange(i));
+    }
+}
+function handleComplaintChange(id) {
+    const cb = document.getElementById('complaint' + id);
+    const sp = document.getElementById('priority' + id);
+    if (!cb || !sp) return;
+    if (cb.checked) {
+        if (chiefComplaints.length >= maxComplaints) { cb.checked = false; return; }
+        chiefComplaints.push(id);
+        const p = ['A','B','C'][chiefComplaints.length - 1];
+        complaintsPriority[id] = p;
+        sp.textContent = p;
+        sp.className = 'priority-badge ' + (p==='A'?'badge-a':p==='B'?'badge-b':'badge-c');
+        sp.style.display = 'flex';
+    } else {
+        const idx = chiefComplaints.indexOf(id);
+        if (idx > -1) { chiefComplaints.splice(idx, 1); delete complaintsPriority[id]; }
+        sp.style.display = 'none';
+        chiefComplaints.forEach((cid, i) => {
+            complaintsPriority[cid] = ['A','B','C'][i];
+            const s = document.getElementById('priority' + cid);
+            if (s) {
+                const p = ['A','B','C'][i];
+                s.textContent = p;
+                s.className = 'priority-badge ' + (p==='A'?'badge-a':p==='B'?'badge-b':'badge-c');
+            }
+        });
+    }
+}
+
+// ===========================
+// AGE → ADD HINT
+// ===========================
+function getRecommendedAddPower(age) {
+    if (age < 40) return 0;
+    if (age < 46) return 0.50;
+    if (age < 51) return 1.00;
+    if (age < 56) return 1.25;
+    if (age < 61) return 1.50;
+    if (age < 66) return 1.75;
+    return 2.00;
+}
+function updateAgeBasedAddPower() {
+    const age = parseInt(document.getElementById('age').value);
+    const hint = document.getElementById('ageAddHint');
+    if (age && age >= 40) {
+        const add = getRecommendedAddPower(age);
+        hint.textContent = `${age}歳の推奨ADD: +${add.toFixed(2)}D — 完全矯正値のADD欄に入力してください`;
+        hint.classList.remove('hidden');
+        document.getElementById('corrRightAdd').value = add.toFixed(2);
+        document.getElementById('corrLeftAdd').value  = add.toFixed(2);
+    } else {
+        hint.classList.add('hidden');
+        document.getElementById('corrRightAdd').value = '';
+        document.getElementById('corrLeftAdd').value  = '';
+    }
+}
+
+// ===========================
+// HELPERS
+// ===========================
+function ev(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+function fmtSph(v) { return (v >= 0 ? '+' : '') + v.toFixed(2); }
+function fmtChange(v) {
+    if (Math.abs(v) < 0.01) return '<span style="color:var(--text-muted)">±0.00</span>';
+    return v > 0
+        ? `<span class="change-pos">+${v.toFixed(2)}</span>`
+        : `<span class="change-neg">${v.toFixed(2)}</span>`;
+}
+
+// ===========================
+// PRESCRIPTION LOGIC
+// ===========================
+function getAdaptationLimit(age) {
+    if (age <= 20) return 1.50; if (age <= 30) return 1.25;
+    if (age <= 40) return 1.00; if (age <= 50) return 0.75;
+    if (age <= 60) return 0.75; return 1.00;
+}
+function getAdjustmentPower(age) {
+    if (age < 20) return 10; if (age < 25) return 8; if (age < 30) return 6;
+    if (age < 35) return 5;  if (age < 40) return 4; if (age < 45) return 3;
+    if (age < 50) return 2.5; if (age < 55) return 2; if (age < 60) return 1.5;
+    return 0.5;
+}
+function getAstigmatismType(axis) {
+    if ((axis >= 0 && axis <= 30) || (axis >= 150 && axis <= 180)) return 'direct';
+    if (axis >= 60 && axis <= 120) return 'inverse';
+    return 'oblique';
+}
+function getAstigmatismFactor(axis) {
+    const t = getAstigmatismType(axis);
+    return t === 'inverse' ? 1/2 : 1/3;
+}
+
+function adjustSpherePrescription(targetSph, hasKB, kbSph, usageYears, age, mainComplaint) {
+    const ts = parseFloat(targetSph) || 0;
+    const ks = parseFloat(kbSph) || 0;
+    let adj = ts;
+    const limit = getAdaptationLimit(age);
+    const isDist = mainComplaint === 1;
+    if (!hasKB) {
+        if (isDist)    adj = ts * 0.8;
+        else if (ts > 0) adj = ts > 0.50 ? 0.50 : ts;
+        else            adj = ts * 0.75;
+    } else {
+        const diff = ts - ks;
+        if (isDist) {
+            const maxD = 1.00;
+            const tAdj = ts * 0.8;
+            const tDiff = tAdj - ks;
+            adj = Math.abs(tDiff) <= maxD ? tAdj : ks + Math.sign(diff) * Math.min(Math.abs(diff), maxD);
+        } else {
+            let cf = usageYears >= 5 ? 0.4 : usageYears >= 3 ? 0.6 : usageYears >= 1 ? 0.75 : 0.85;
+            if (age >= 60) cf *= 0.8; else if (age >= 50) cf *= 0.9;
+            const maxC = Math.min(Math.abs(diff), limit);
+            const limC = diff > 0 ? maxC : -maxC;
+            adj = Math.abs(diff) <= 0.5 ? ts : ks + limC * cf;
+        }
+    }
+    return Math.max(-20, Math.min(20, Math.round(adj * 4) / 4));
+}
+
+function adjustAstigmatismPrescription(tCyl, tAxis, hasKB, kbCyl, kbAxis, usageYears, age) {
+    const tc = parseFloat(tCyl) || 0;
+    const ta = parseInt(tAxis) || 0;
+    const kc = parseFloat(kbCyl) || 0;
+    const ka = parseInt(kbAxis) || 0;
+    let ac = Math.round(tc * 4) / 4;
+    let aa = Math.round(ta / 5) * 5;
+    if (aa === 180) aa = 0;
+    if (!hasKB) {
+        const f = getAstigmatismFactor(ta);
+        ac = Math.round(tc * f * 0.8 * 4) / 4;
+        return { cyl: Math.max(ac, -6), axis: aa };
+    }
+    const cd = Math.abs(tc - kc);
+    let af = 0.5;
+    if (usageYears >= 5) af = 0.3; else if (usageYears >= 3) af = 0.4; else if (usageYears >= 1) af = 0.5;
+    if (age >= 60) af *= 0.6; else if (age >= 50) af *= 0.7; else if (age >= 40) af *= 0.8;
+    if      (cd <= 0.25) ac = tc;
+    else if (cd <= 0.5)  ac = kc + (tc - kc) * af * 0.8;
+    else if (cd <= 1.0)  ac = kc + (tc - kc) * af * 0.6;
+    else                 ac = kc + (tc - kc) * af * 0.4;
+    const maxCC = age >= 50 ? 0.5 : 0.75;
+    const actC = ac - kc;
+    if (Math.abs(actC) > maxCC) ac = kc + Math.sign(actC) * maxCC;
+    let ad = Math.abs(ta - ka);
+    if (ad > 90) ad = 180 - ad;
+    if (ad <= 10) {
+        aa = ta;
+    } else {
+        let diff = ta - ka;
+        if (Math.abs(diff) > 90) diff = diff > 0 ? diff - 180 : diff + 180;
+        aa = ka + Math.sign(diff) * 10;
+    }
+    const kbType = getAstigmatismType(ka);
+    if (kbType === 'oblique' && usageYears >= 1) aa = ka;
+    ac = Math.round(ac * 4) / 4;
+    aa = Math.round(aa / 5) * 5;
+    while (aa < 0) aa += 180;
+    while (aa >= 180) aa -= 180;
+    return { cyl: Math.max(ac, -6), axis: aa };
+}
+
+function adjustAddPrescription(targetAdd, hasKB, kbAdd, usageYears, age) {
+    if (age < 40) return 0;
+    const ta = parseFloat(targetAdd) || 0;
+    const ka = parseFloat(kbAdd) || 0;
+    let adj = ta;
+    if (!hasKB) {
+        adj = getRecommendedAddPower(age);
+    } else {
+        const d = ta - ka;
+        let cf = usageYears >= 5 ? 0.8 : usageYears >= 3 ? 0.9 : 1.0;
+        if      (Math.abs(d) <= 0.25) adj = ta;
+        else if (Math.abs(d) <= 0.50) adj = ka + d * cf;
+        else                          adj = ka + Math.sign(d) * 0.50;
+    }
+    return Math.max(0, Math.min(3, Math.round(adj * 4) / 4));
+}
+
+function checkAnisometropia(rv, lv, hasKB) {
+    return hasKB && Math.abs((parseFloat(rv)||1) - (parseFloat(lv)||1)) >= 0.3;
+}
+
+function adjustBinocularBalance(rs, ls, rc, lc, age) {
+    const rse = rs + rc/2, lse = ls + lc/2, diff = Math.abs(rse - lse);
+    if (diff >= 2.0 && age < 50) {
+        const adj = diff * 0.3;
+        if (rse > lse) { rs -= adj; ls += adj; } else { rs += adj; ls -= adj; }
+    }
+    return { rightSph: Math.round(rs*4)/4, leftSph: Math.round(ls*4)/4 };
+}
+
+function getRefractiveHint() {
+    const rd = Math.abs((parseFloat(ev('refRightSph'))||0) - (parseFloat(ev('corrRightSph'))||0));
+    const ld = Math.abs((parseFloat(ev('refLeftSph'))||0)  - (parseFloat(ev('corrLeftSph'))||0));
+    if (rd > 1.0 || ld > 1.0) return { type:'warning', message:'レフ値と完全矯正値に大きな差があります。測定の再確認をお勧めします。' };
+    if (rd > 0.5 || ld > 0.5) return { type:'info',    message:'レフ値と完全矯正値に差があります。調節緊張の可能性を考慮してください。' };
+    return { type:'success', message:'レフ値と完全矯正値が近似しており、良好な測定結果です。' };
+}
+
+function calculateNearPoint(sph, adj) {
+    const p = parseFloat(sph)||0, a = parseFloat(adj)||0;
+    const np = p - a;
+    if (np === 0) return '∞';
+    const cm = Math.abs(100 / np);
+    return cm > 1000 ? '∞' : cm.toFixed(0) + 'cm';
+}
+
+function calculatePrescription() {
+    const age = parseInt(ev('age'));
+    if (!age || age < 10 || age > 100) { alert('年齢を正しく入力してください（10〜100歳）'); return; }
+
+    const hasKB = document.getElementById('hasKB').checked;
+    const usageYrs = parseInt(ev('kbUsageYears')) || 0;
+    const mainC = chiefComplaints.length > 0 ? chiefComplaints[0] : 0;
+    const addPow = getRecommendedAddPower(age);
+    const adjPow = getAdjustmentPower(age);
+
+    const rs = parseFloat(ev('corrRightSph'))||0, rc = parseFloat(ev('corrRightCyl'))||0,
+          ra = parseInt(ev('corrRightAxis'))||0,   radd = parseFloat(ev('corrRightAdd'))||addPow;
+    const ls = parseFloat(ev('corrLeftSph'))||0,  lc = parseFloat(ev('corrLeftCyl'))||0,
+          la = parseInt(ev('corrLeftAxis'))||0,    ladd = parseFloat(ev('corrLeftAdd'))||addPow;
+
+    const isAniso = checkAnisometropia(ev('kbRightVision'), ev('kbLeftVision'), hasKB);
+
+    let ars = adjustSpherePrescription(rs, hasKB, ev('kbRightSph'), usageYrs, age, mainC);
+    let als = adjustSpherePrescription(ls, hasKB, ev('kbLeftSph'),  usageYrs, age, mainC);
+    if (isAniso) { ars = parseFloat(ev('kbRightSph'))||rs; als = parseFloat(ev('kbLeftSph'))||ls; }
+
+    const rAstig = adjustAstigmatismPrescription(rc, ra, hasKB, ev('kbRightCyl'), ev('kbRightAxis'), usageYrs, age);
+    const lAstig = adjustAstigmatismPrescription(lc, la, hasKB, ev('kbLeftCyl'),  ev('kbLeftAxis'),  usageYrs, age);
+
+    const arAdd = adjustAddPrescription(radd, hasKB, ev('kbRightAdd'), usageYrs, age);
+    const alAdd = adjustAddPrescription(ladd, hasKB, ev('kbLeftAdd'),  usageYrs, age);
+
+    const bal = isAniso ? {rightSph:ars, leftSph:als} : adjustBinocularBalance(ars, als, rAstig.cyl, lAstig.cyl, age);
+
+    let rRx = { sph: bal.rightSph, cyl: rAstig.cyl, axis: rAstig.axis, add: arAdd };
+    let lRx = { sph: bal.leftSph,  cyl: lAstig.cyl, axis: lAstig.axis, add: alAdd };
+    if (rRx.cyl === 0) rRx.axis = 0;
+    if (lRx.cyl === 0) lRx.axis = 0;
+
+    const rx = {
+        right: rRx, left: lRx,
+        addPower: Math.max(arAdd, alAdd),
+        timestamp: new Date().toISOString(),
+        patient: ev('patientName') || '名前なし',
+        age, chiefComplaints, hasKB, isAnisometropia: isAniso
+    };
+
+    if (hasKB) {
+        rx.changes = {
+            right: { sph: rRx.sph-(parseFloat(ev('kbRightSph'))||0), cyl: rRx.cyl-(parseFloat(ev('kbRightCyl'))||0), add: rRx.add-(parseFloat(ev('kbRightAdd'))||0) },
+            left:  { sph: lRx.sph-(parseFloat(ev('kbLeftSph'))||0),  cyl: lRx.cyl-(parseFloat(ev('kbLeftCyl'))||0),  add: lRx.add-(parseFloat(ev('kbLeftAdd'))||0) }
+        };
+    }
+    rx.refHint = getRefractiveHint();
+    const avSE = (rRx.sph + rRx.cyl/2 + lRx.sph + lRx.cyl/2) / 2;
+    rx.nearPoint = calculateNearPoint(avSE, adjPow);
+
+    displayResults(rx);
+}
+
+// ===========================
+// DISPLAY RESULTS
+// ===========================
+function displayResults(rx) {
+    window.currentPrescription = rx;
+    const col = document.getElementById('resultsColumn');
+
+    const rSphClass = rx.right.sph > 0 ? 'positive' : rx.right.sph < 0 ? 'negative' : '';
+    const lSphClass = rx.left.sph  > 0 ? 'positive' : rx.left.sph  < 0 ? 'negative' : '';
+
+    const hintClass = rx.refHint.type === 'success' ? 'hint-success' : rx.refHint.type === 'warning' ? 'hint-warning' : 'hint-info';
+
+    let html = `
+    <div class="card">
+        <div class="card-title green">処方結果</div>
+        <div class="hint-box ${hintClass}" style="margin-bottom:14px;">${rx.refHint.message}</div>
+        <div class="rx-grid">
+            <div class="rx-eye">
+                <div class="rx-eye-label">右眼 OD</div>
+                <div class="rx-row"><span class="rx-key">SPH</span><span class="rx-val ${rSphClass}">${fmtSph(rx.right.sph)}</span></div>
+                <div class="rx-row"><span class="rx-key">CYL</span><span class="rx-val">${rx.right.cyl.toFixed(2)}</span></div>
+                ${rx.right.cyl !== 0 ? `<div class="rx-row"><span class="rx-key">AXIS</span><span class="rx-val">${rx.right.axis}°</span></div>` : ''}
+                ${rx.right.add > 0 ? `<div class="rx-row"><span class="rx-key">ADD</span><span class="rx-val add-val">+${rx.right.add.toFixed(2)}</span></div>` : ''}
+            </div>
+            <div class="rx-eye">
+                <div class="rx-eye-label">左眼 OS</div>
+                <div class="rx-row"><span class="rx-key">SPH</span><span class="rx-val ${lSphClass}">${fmtSph(rx.left.sph)}</span></div>
+                <div class="rx-row"><span class="rx-key">CYL</span><span class="rx-val">${rx.left.cyl.toFixed(2)}</span></div>
+                ${rx.left.cyl !== 0 ? `<div class="rx-row"><span class="rx-key">AXIS</span><span class="rx-val">${rx.left.axis}°</span></div>` : ''}
+                ${rx.left.add > 0 ? `<div class="rx-row"><span class="rx-key">ADD</span><span class="rx-val add-val">+${rx.left.add.toFixed(2)}</span></div>` : ''}
+            </div>
+        </div>
+        ${rx.addPower > 0 ? `<div class="add-banner"><span class="add-banner-label">推奨 ADD (${rx.age}歳)</span><span class="add-banner-val">+${rx.addPower.toFixed(2)} D</span></div>` : ''}
+        <div style="font-size:12px;color:var(--text-secondary);">明視域（推定近点）: <strong>${rx.nearPoint}</strong></div>
+    </div>`;
+
+    // KB変化量
+    if (rx.changes) {
+        html += `<div class="card">
+            <div class="card-title">KB → 新処方 変化量</div>
+            <table class="changes-table">
+                <thead><tr><th>眼</th><th>SPH変化</th><th>CYL変化</th><th>ADD変化</th></tr></thead>
+                <tbody>
+                    <tr><td>右眼</td><td>${fmtChange(rx.changes.right.sph)}</td><td>${fmtChange(rx.changes.right.cyl)}</td><td>${fmtChange(rx.changes.right.add)}</td></tr>
+                    <tr><td>左眼</td><td>${fmtChange(rx.changes.left.sph)}</td><td>${fmtChange(rx.changes.left.cyl)}</td><td>${fmtChange(rx.changes.left.add)}</td></tr>
+                </tbody>
+            </table>
+        </div>`;
+    }
+
+    // レンズ推奨
+    const lenses = generateLensRecommendations(rx);
+    html += `<div class="card"><div class="card-title amber">レンズ推奨</div>`;
+    lenses.forEach(l => {
+        html += `<div class="lens-card">
+            <div class="lens-header">
+                <div><div class="lens-name">${l.type}</div><div class="lens-note">${l.note}</div></div>
+                <div class="lens-distance">${l.distance}</div>
+            </div>
+            <div class="lens-data">
+                <div>
+                    <div class="lens-eye-label">右眼 OD</div>
+                    <div style="font-size:12px;font-variant-numeric:tabular-nums;">
+                        SPH ${fmtSph(l.rightSph)}
+                        ${l.rightCyl ? ` / CYL ${l.rightCyl.toFixed(2)}` : ''}
+                        ${l.rightCyl && l.rightAxis ? ` AX ${l.rightAxis}°` : ''}
+                        ${l.add > 0 ? ` / ADD +${l.add.toFixed(2)}` : ''}
+                    </div>
+                </div>
+                <div>
+                    <div class="lens-eye-label">左眼 OS</div>
+                    <div style="font-size:12px;font-variant-numeric:tabular-nums;">
+                        SPH ${fmtSph(l.leftSph)}
+                        ${l.leftCyl ? ` / CYL ${l.leftCyl.toFixed(2)}` : ''}
+                        ${l.leftCyl && l.leftAxis ? ` AX ${l.leftAxis}°` : ''}
+                        ${l.add > 0 ? ` / ADD +${l.add.toFixed(2)}` : ''}
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    });
+    html += `</div>`;
+
+    // アドバイス
+    const advice = generateAdvice(rx);
+    html += `<div class="card"><div class="card-title">処方アドバイス</div>`;
+    advice.forEach(a => { html += `<div class="advice-item">${a}</div>`; });
+    html += `</div>`;
+
+    col.innerHTML = html;
+}
+
+function generateLensRecommendations(rx) {
+    const lenses = [{ type:'遠用単焦点', rightSph:rx.right.sph, leftSph:rx.left.sph, rightCyl:rx.right.cyl, leftCyl:rx.left.cyl, rightAxis:rx.right.axis, leftAxis:rx.left.axis, add:0, distance:'運転・スポーツ', note:'遠方視力重視' }];
+    if (rx.age >= 40 && rx.addPower > 0) {
+        lenses.push({ type:'近用単焦点', rightSph:rx.right.sph+rx.addPower, leftSph:rx.left.sph+rx.addPower, rightCyl:rx.right.cyl, leftCyl:rx.left.cyl, rightAxis:rx.right.axis, leftAxis:rx.left.axis, add:0, distance:'読書・近作業', note:'近方専用' });
+        lenses.push({ type:'遠近両用', rightSph:rx.right.sph, leftSph:rx.left.sph, rightCyl:rx.right.cyl, leftCyl:rx.left.cyl, rightAxis:rx.right.axis, leftAxis:rx.left.axis, add:rx.addPower, distance:'遠〜近 全域', note:'累進レンズ' });
+    }
+    return lenses;
+}
+
+function generateAdvice(rx) {
+    const advice = [];
+    if (rx.addPower > 0) advice.push(`【加入度数対応】${rx.age}歳の推奨ADD（+${rx.addPower.toFixed(2)}D）を適用しました。1〜2年毎の定期調整が必要です。`);
+    if (!rx.hasKB) advice.push('初回処方のため、乱視軸方向別処方法則に基づいて保守的な度数調整を行っています。');
+    const rType = getAstigmatismType(rx.right.axis), lType = getAstigmatismType(rx.left.axis);
+    if (rType === 'direct' || lType === 'direct') advice.push('直乱視（180度方向）があります。違和感を最小限に抑えた保守的な処方です。');
+    if (rType === 'inverse' || lType === 'inverse') advice.push('倒乱視（90度方向）があります。目を細めても見えにくいため適切な乱視処方を行っています。');
+    if (rType === 'oblique' || lType === 'oblique') advice.push('斜乱視があります。平衡感覚への影響を考慮し、軸度変更は避けた処方です。');
+    if (rx.isAnisometropia) advice.push('不同視があるため、現用眼鏡度数を基準に処方しています。');
+    if (advice.length === 0) advice.push('実践的な眼鏡処方法則に基づく適切な処方です。良好な視力が期待できます。');
+    return advice;
+}
+
+// ===========================
+// SAVE / HISTORY
+// ===========================
+function savePrescription() {
+    if (!window.currentPrescription) { alert('先に処方計算を実行してください。'); return; }
+    prescriptionHistory.unshift(window.currentPrescription);
+    if (prescriptionHistory.length > 20) prescriptionHistory = prescriptionHistory.slice(0, 20);
+    localStorage.setItem('prescriptionHistory', JSON.stringify(prescriptionHistory));
+    alert('保存しました（最新20件）');
+}
+function toggleHistory() {
+    const p = document.getElementById('historyPanel');
+    const showing = p.style.display !== 'none';
+    p.style.display = showing ? 'none' : 'block';
+    if (!showing) displayHistory();
+}
+function displayHistory() {
+    const c = document.getElementById('historyContent');
+    if (!prescriptionHistory.length) { c.innerHTML = '<p style="color:var(--text-muted);font-size:13px;">保存された履歴はありません</p>'; return; }
+    c.innerHTML = prescriptionHistory.map((item, i) => `
+        <div class="history-item">
+            <div>
+                <div style="font-weight:700;font-size:13px;">${item.patient}（${item.age}歳）</div>
+                <div style="font-size:11px;color:var(--text-muted);">${new Date(item.timestamp).toLocaleString('ja-JP')}</div>
+                <div style="font-size:12px;margin-top:4px;">
+                    右: SPH ${fmtSph(item.right.sph)} / 左: SPH ${fmtSph(item.left.sph)}
+                    ${item.addPower > 0 ? ` / ADD +${item.addPower.toFixed(2)}` : ''}
+                </div>
+            </div>
+            <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px;" onclick="loadPrescription(${i})">表示</button>
+        </div>`).join('');
+}
+function loadPrescription(i) {
+    const p = prescriptionHistory[i];
+    if (!p) return;
+    displayResults(p);
+    toggleHistory();
+    switchTab('calc', null);
+}
+function clearAllData() {
+    if (!confirm('全ての処方履歴を削除しますか？')) return;
+    prescriptionHistory = [];
+    localStorage.removeItem('prescriptionHistory');
+    alert('削除しました');
+}
+
+// ===========================
+// ===== PRACTICE / QUIZ =====
+// ===========================
+let quizState = { category: 'all', questions: [], current: 0, correct: 0, answered: 0 };
+
+const QUESTION_BANK = [
+    // ---- 近視 ----
+    {
+        category: 'myopia',
+        typeBadge: '近視', badgeClass: 'badge-myopia',
+        scenario: '25歳・男性。初めての眼鏡。\n完全矯正値 右 SPH -3.00 D、左 SPH -2.75 D\n主訴：遠くが見えにくい（遠方視力低下）',
+        question: 'このケースの初回処方SPHとして最も適切なものはどれですか？',
+        choices: ['右 -3.00 / 左 -2.75（完全矯正値をそのまま）', '右 -2.25 / 左 -2.00（完全矯正値の75%）', '右 -1.50 / 左 -1.25（完全矯正値の50%）'],
+        correct: 1,
+        reason: '初回・遠方重視の主訴がない場合、近視の初回処方は完全矯正値の75〜80%を基準とします。慣れやすさを考慮し段階的に矯正するのが基本方針です。右: -3.00×0.75=-2.25、左: -2.75×0.75≒-2.00 が適切です。'
+    },
+    {
+        category: 'myopia',
+        typeBadge: '近視', badgeClass: 'badge-myopia',
+        scenario: '35歳・女性。現用眼鏡（KB）あり、使用3年。\nKB：右 -2.00、左 -1.75\n完全矯正値：右 -3.50、左 -3.25\n主訴：遠くが見えにくい',
+        question: 'KB有り・3年使用の場合、変化量の目安として正しいのはどれですか？',
+        choices: ['完全矯正値との差を100%そのまま変更する', '完全矯正値との差の約60%を変更量とする（慣れ制限）', 'KBから変更せず経過観察する'],
+        correct: 1,
+        reason: '現用眼鏡使用年数3年の場合、完全矯正値との差の約60%を変化量の目安にします。一度に大きく変えると見え方の不快感が生じやすいため、段階的な矯正が基本です。'
+    },
+    {
+        category: 'myopia',
+        typeBadge: '近視', badgeClass: 'badge-myopia',
+        scenario: '20歳・男性。初めての眼鏡。\n完全矯正値：右 -3.00、左 -3.00\n主訴：遠方視力低下（遠くが見えにくい）をA主訴に選択',
+        question: '遠方視力低下をA主訴に選択した場合の処方方針は？',
+        choices: ['75%処方（-2.25 D）', '80%処方（-2.50 D）で遠方重視', '完全矯正値（-3.00 D）をそのまま処方'],
+        correct: 1,
+        reason: '遠方視力低下（主訴A）の場合は完全矯正値の80%を基準とします。通常の初回処方75%より少し強い処方で、遠方視力をより重視した方針です。-3.00×0.80=-2.50 D が適切です。'
+    },
+    // ---- 遠視 ----
+    {
+        category: 'hyperopia',
+        typeBadge: '遠視', badgeClass: 'badge-hyper',
+        scenario: '30歳・女性。初めての眼鏡。\n完全矯正値：右 +2.50、左 +2.25\n主訴：眼精疲労（読書・近作業後の疲れ）',
+        question: '遠視初回処方のSPHとして最も適切なものはどれですか？',
+        choices: ['右 +2.50 / 左 +2.25（完全矯正値をそのまま）', '右 +0.50 / 左 +0.50（初回は弱め）', '右 +1.25 / 左 +1.25（完全矯正値の50%）'],
+        correct: 1,
+        reason: '遠視の初回処方は+0.50D以下から始めるのが原則です。遠視は調節力で補っていることが多く、いきなり完全矯正すると見え方への違和感や頭痛が起きやすいため、慣れながら段階的に増やします。'
+    },
+    {
+        category: 'hyperopia',
+        typeBadge: '遠視', badgeClass: 'badge-hyper',
+        scenario: '45歳・男性。KB：右 +1.00、左 +1.00（使用1年）\n完全矯正値：右 +2.00、左 +2.00\n主訴：近くが見えにくい（近方視力低下）',
+        question: 'KB有り・遠視の場合の変化量の目安として正しいのはどれですか？',
+        choices: ['完全矯正値との差（+1.00D）をそのまま追加する', '変化量の75%（+0.75D）を基準に追加する', '変更なし、KBのままで様子を見る'],
+        correct: 1,
+        reason: 'KB有り・使用1年の場合は変化量の約75%を基準とします。KB +1.00から完全矯正+2.00への差は+1.00D。その75%は+0.75Dなので、新処方は +1.75D となります。'
+    },
+    // ---- 乱視 ----
+    {
+        category: 'astig',
+        typeBadge: '乱視', badgeClass: 'badge-astig',
+        scenario: '28歳・女性。初めての眼鏡。\n完全矯正値：右 SPH -1.00 CYL -2.00 AXIS 180°\n主訴：遠くがぼやける',
+        question: 'AXIS 180°（直乱視）の初回乱視処方として正しいのはどれですか？',
+        choices: ['CYL -2.00 AXIS 180°（完全矯正値をそのまま）', 'CYL -0.75 AXIS 180°（完全矯正値の約1/3）', 'CYL -1.00 AXIS 180°（完全矯正値の1/2）'],
+        correct: 1,
+        reason: '直乱視（AXIS 0〜30°・150〜180°）は目を細めれば補正できるため違和感が少なく、初回は完全矯正値の約1/3（0.33倍）で処方します。-2.00×1/3≒-0.67→-0.75D が適切です。'
+    },
+    {
+        category: 'astig',
+        typeBadge: '乱視', badgeClass: 'badge-astig',
+        scenario: '32歳・男性。初めての眼鏡。\n完全矯正値：右 SPH -0.75 CYL -2.50 AXIS 90°\n主訴：遠くがぼやける',
+        question: 'AXIS 90°（倒乱視）の初回乱視処方として正しいのはどれですか？',
+        choices: ['CYL -0.75 AXIS 90°（完全矯正値の約1/3）', 'CYL -1.25 AXIS 90°（完全矯正値の1/2）', 'CYL -2.50 AXIS 90°（完全矯正値をそのまま）'],
+        correct: 1,
+        reason: '倒乱視（AXIS 60〜120°）は目を細めても補正が難しく直乱視より矯正効果が高いため、初回から1/2を処方します。-2.50×1/2=-1.25D が適切です。直乱視の1/3と混同しないよう注意。'
+    },
+    {
+        category: 'astig',
+        typeBadge: '乱視', badgeClass: 'badge-astig',
+        scenario: '40歳・女性。KB：右 SPH -1.00 CYL -1.00 AXIS 45°（使用3年）\n完全矯正値：右 SPH -1.50 CYL -2.00 AXIS 45°',
+        question: '斜乱視（AXIS 45°）のKB有り処方で絶対に守るべきルールはどれですか？',
+        choices: ['乱視度数（CYL）はKBから最大2.00D変更してよい', '斜乱視の軸度（AXIS）は変更しない', 'CYLは完全矯正値をそのまま処方する'],
+        correct: 1,
+        reason: '斜乱視（AXIS 30〜60°や120〜150°付近）は軸が変わると平衡感覚・見え方への影響が大きいため、KB使用1年以上の場合は軸度（AXIS）を変更しないことが絶対ルールです。CYLの量は段階的に変更可能です。'
+    },
+    // ---- 老視 ----
+    {
+        category: 'presbyopia',
+        typeBadge: '老視', badgeClass: 'badge-presby',
+        scenario: '48歳・男性。初めての老視対応眼鏡。\n主訴：近くが見えにくい（スマホ・読書が辛い）\n完全矯正値（遠用）：右 -0.50、左 -0.50',
+        question: '48歳の初回ADD（加入度数）として最も適切なものはどれですか？',
+        choices: ['ADD +0.50 D（40〜45歳の推奨値）', 'ADD +1.00 D（46〜50歳の推奨値）', 'ADD +2.00 D（66歳以上の推奨値）'],
+        correct: 1,
+        reason: '46〜50歳の推奨ADDは+1.00Dです。40歳代前半（+0.50D）よりも調節力が低下しているため、+1.00Dが標準です。2.00D以上は60代以降の高齢者向けなので過矯正になります。'
+    },
+    {
+        category: 'presbyopia',
+        typeBadge: '老視', badgeClass: 'badge-presby',
+        scenario: '55歳・女性。KB（遠近両用）ADD +1.50 使用3年。\n完全矯正値 ADD +2.00（年齢的推奨値）\n主訴：近くが以前より見えにくくなった',
+        question: 'KB有り・ADD変化量1回の上限として適切なのはどれですか？',
+        choices: ['変化量の制限なし。完全矯正値（+2.00D）にそのまま合わせる', '最大+0.50D以内の変化に抑える', '最大+1.00Dまで一気に変更できる'],
+        correct: 1,
+        reason: 'ADDの変化量は1回最大+0.50D以内が原則です。KB +1.50 → 推奨+2.00D の差は+0.50Dなので、ちょうどこの上限に該当します。一度に変えすぎると近方の見え方に急激な変化が生じて不快感の原因になります。'
+    },
+    {
+        category: 'presbyopia',
+        typeBadge: '老視', badgeClass: 'badge-presby',
+        scenario: '62歳・男性。デスクワーク中心。\nKB：遠近両用 ADD +1.75（使用2年）\n主訴：PC画面が疲れる、手元も見づらい',
+        question: 'デスクワーク中心の62歳にレンズ設計を提案する場合、最優先すべきものはどれですか？',
+        choices: ['遠用単焦点（運転・遠方用）', '中近両用（PC〜手元の中間距離重視）', '遠近両用のADDを上げるだけ'],
+        correct: 1,
+        reason: 'デスクワーク中心かつ「PC画面が疲れる」という主訴には中近両用レンズが最適です。中近両用は中距離（PC画面約60cm）〜近方（読書30〜40cm）に最適化された設計で、デスクワークでの眼精疲労を大幅に軽減できます。'
+    },
+];
+
+let currentCategory = 'all';
+
+function selectCategory(cat, btn) {
+    currentCategory = cat;
+    document.querySelectorAll('.quiz-cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+function startQuiz() {
+    let pool = currentCategory === 'all' ? [...QUESTION_BANK] : QUESTION_BANK.filter(q => q.category === currentCategory);
+    // シャッフル
+    for (let i = pool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    quizState = { category: currentCategory, questions: pool, current: 0, correct: 0, answered: 0 };
+    document.getElementById('quizProgressArea').classList.remove('hidden');
+    document.getElementById('quizArea').classList.remove('hidden');
+    document.getElementById('quizEndArea').classList.add('hidden');
+    showQuestion();
+}
+
+function showQuestion() {
+    const q = quizState.questions[quizState.current];
+    const total = quizState.questions.length;
+    const idx = quizState.current;
+
+    document.getElementById('progressBar').style.width = (idx / total * 100) + '%';
+    document.getElementById('scoreDisplay').textContent = `${quizState.correct} / ${quizState.answered}`;
+
+    const badge = document.getElementById('quizTypeBadge');
+    badge.textContent = q.typeBadge;
+    badge.className = 'quiz-type-badge ' + q.badgeClass;
+    document.getElementById('quizNum').textContent = `問 ${idx + 1} / ${total}`;
+    document.getElementById('quizScenario').textContent = q.scenario;
+    document.getElementById('quizQuestion').textContent = q.question;
+
+    const labels = ['A', 'B', 'C'];
+    document.getElementById('choicesArea').innerHTML = q.choices.map((c, i) => `
+        <button class="choice-btn" onclick="selectAnswer(${i})">
+            <span class="choice-label">${labels[i]}</span>
+            <span>${c}</span>
+        </button>`).join('');
+
+    document.getElementById('resultPanel').classList.remove('visible');
+}
+
+function selectAnswer(idx) {
+    const q = quizState.questions[quizState.current];
+    const btns = document.querySelectorAll('.choice-btn');
+    btns.forEach(b => b.disabled = true);
+
+    quizState.answered++;
+    const isCorrect = idx === q.correct;
+    if (isCorrect) quizState.correct++;
+
+    btns.forEach((b, i) => {
+        if (i === idx && isCorrect) b.classList.add('correct');
+        else if (i === idx && !isCorrect) b.classList.add('wrong');
+        else if (i === q.correct) b.classList.add('show-answer');
+    });
+
+    const panel = document.getElementById('resultPanel');
+    const box = document.getElementById('resultBox');
+    if (isCorrect) {
+        box.innerHTML = `<div class="result-correct"><div class="result-label">✓ 正解！</div><div class="result-reason">${q.reason}</div></div>`;
+    } else {
+        box.innerHTML = `<div class="result-wrong"><div class="result-label">✗ 不正解</div><div class="result-reason">正解は <strong>${['A','B','C'][q.correct]}</strong> です。<br>${q.reason}</div></div>`;
+    }
+
+    document.getElementById('scoreDisplay').textContent = `${quizState.correct} / ${quizState.answered}`;
+
+    const isLast = quizState.current >= quizState.questions.length - 1;
+    document.getElementById('nextBtn').textContent = isLast ? '結果を見る' : '次の問題へ →';
+    panel.classList.add('visible');
+}
+
+function nextQuestion() {
+    quizState.current++;
+    if (quizState.current >= quizState.questions.length) {
+        showQuizEnd();
+        return;
+    }
+    showQuestion();
+}
+
+function showQuizEnd() {
+    document.getElementById('quizArea').classList.add('hidden');
+    document.getElementById('quizProgressArea').classList.add('hidden');
+    document.getElementById('quizEndArea').classList.remove('hidden');
+
+    const total = quizState.questions.length;
+    const correct = quizState.correct;
+    const pct = Math.round(correct / total * 100);
+
+    document.getElementById('statTotal').textContent   = total;
+    document.getElementById('statCorrect').textContent = correct;
+    document.getElementById('statWrong').textContent   = total - correct;
+
+    let rank, icon, title, sub;
+    if (pct >= 90) { rank='S'; icon='🏆'; title='エキスパート！'; sub='ほぼ完璧です。処方方針をしっかり理解しています。'; }
+    else if (pct >= 70) { rank='A'; icon='👓'; title='よくできました！'; sub='もう少しで完璧です。苦手なカテゴリを再確認しましょう。'; }
+    else if (pct >= 50) { rank='B'; icon='📚'; title='もう少し！'; sub='基本はできています。各カテゴリ別に練習しましょう。'; }
+    else { rank='C'; icon='💪'; title='練習しましょう！'; sub='基本的な処方方針から確認してみましょう。'; }
+
+    document.getElementById('endIcon').textContent = icon;
+    document.getElementById('endTitle').textContent = title;
+    document.getElementById('endSub').textContent   = `正解率 ${pct}%（${correct}/${total}問）— ${sub}`;
+    const rb = document.getElementById('rankBadge');
+    rb.textContent = `ランク ${rank}`;
+    rb.className = 'rank-badge rank-' + rank.toLowerCase();
+}
+
+// ===========================
+// INIT
+// ===========================
+document.addEventListener('DOMContentLoaded', () => {
+    setupLongPress();
+    setupComplaints();
+});
+</script>
+</body>
+</html>
