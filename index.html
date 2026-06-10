@@ -1655,13 +1655,15 @@ function showQuestion() {
     let scenHtml = '';
     scenLines.forEach(line => {
         if (line.startsWith('KB\uff1a') || line.startsWith('\u5b8c\u5168\u77ef\u6b63\u5024') || line.startsWith('\u88f8\u773c\u8996\u529b') || line.startsWith('KB\u3067\u306e')) {
-            scenHtml += '<div style="background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:8px 12px;margin:3px 0;font-size:13px;font-weight:600;">' + line + '</div>';
+            const lineWithBreak = line.replace(/\u3001?\s*(\u5de6[\s\uff1a])/, '<br>$1');
+            scenHtml += '<div style="background:#fff;border:1px solid #E2E8F0;border-radius:6px;padding:8px 12px;margin:3px 0;font-size:13px;font-weight:600;">' + lineWithBreak + '</div>';
         } else if (line.startsWith('\u4e3b\u8a34')) {
             scenHtml += '<div style="margin:3px 0;"><span style="background:#2563EB;color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:700;">' + line + '</span></div>';
         } else if (line.trim() === '') {
             scenHtml += '';
         } else {
-            scenHtml += '<div style="font-size:14px;font-weight:700;margin-bottom:6px;">' + line + '</div>';
+            const lineWithBreak2 = line.replace(/\u3001?\s*(\u5de6[\s\uff1a])/, '<br>$1');
+            scenHtml += '<div style="font-size:14px;font-weight:700;margin-bottom:6px;">' + lineWithBreak2 + '</div>';
         }
     });
     document.getElementById('quizScenario').innerHTML = scenHtml;
