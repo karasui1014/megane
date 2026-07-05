@@ -5,33 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>眼鏡処方計算ツール</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --bg: #F4F6F9;
+            --bg: #F7F9FC;
             --card: #FFFFFF;
-            --border: #E2E8F0;
-            --text-primary: #0F172A;
-            --text-secondary: #64748B;
-            --text-muted: #94A3B8;
-            --blue: #2563EB;
-            --blue-light: #EFF6FF;
+            --border: #EAF0F6;
+            --border-strong: #DCE6F1;
+            --text-primary: #0B1B33;
+            --text-secondary: #5A6B85;
+            --text-muted: #93A2B8;
+            --blue: #1E6FEB;
+            --blue-strong: #1560D6;
+            --blue-grad: linear-gradient(135deg, #2E7BFF, #1E6FEB);
+            --blue-light: #F0F6FF;
             --blue-mid: #DBEAFE;
-            --green: #059669;
+            --green: #0E9F6E;
+            --green-grad: linear-gradient(135deg, #12B981, #0E9F6E);
             --green-light: #ECFDF5;
             --amber: #D97706;
             --amber-light: #FFFBEB;
-            --red: #DC2626;
+            --red: #E11D48;
             --red-light: #FEF2F2;
             --purple: #7C3AED;
             --purple-light: #F5F3FF;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
-            --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.05);
-            --shadow-lg: 0 10px 30px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.06);
-            --radius: 12px;
-            --radius-sm: 8px;
+            --shadow-sm: 0 2px 8px rgba(15,40,80,.05);
+            --shadow-md: 0 6px 20px rgba(15,40,80,.08);
+            --shadow-lg: 0 14px 40px rgba(15,40,80,.12);
+            --shadow-blue: 0 6px 16px rgba(30,111,235,.28);
+            --radius: 16px;
+            --radius-sm: 11px;
+            --font-num: 'DM Sans', 'Inter', sans-serif;
         }
 
         body {
@@ -45,13 +51,14 @@
 
         /* ===== HEADER ===== */
         .site-header {
-            background: var(--card);
+            background: rgba(255,255,255,.82);
+            backdrop-filter: saturate(180%) blur(12px);
+            -webkit-backdrop-filter: saturate(180%) blur(12px);
             border-bottom: 1px solid var(--border);
             padding: 0 24px;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: var(--shadow-sm);
         }
         .header-inner {
             max-width: 1280px;
@@ -67,13 +74,14 @@
             gap: 12px;
         }
         .logo-icon {
-            width: 36px; height: 36px;
-            background: var(--blue);
-            border-radius: 8px;
+            width: 38px; height: 38px;
+            background: var(--blue-grad);
+            border-radius: 11px;
             display: flex; align-items: center; justify-content: center;
             font-size: 18px;
+            box-shadow: var(--shadow-blue);
         }
-        .site-title { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+        .site-title { font-size: 16px; font-weight: 700; color: var(--text-primary); letter-spacing: -.01em; }
         .site-subtitle { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
         .header-right { display: flex; align-items: center; gap: 8px; }
 
@@ -131,23 +139,35 @@
             border: 1px solid var(--border);
             border-radius: var(--radius);
             box-shadow: var(--shadow-sm);
-            padding: 20px;
-            margin-bottom: 16px;
+            padding: 22px;
+            margin-bottom: 18px;
         }
         .card-title {
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: .06em;
-            color: var(--text-secondary);
-            border-left: 3px solid var(--blue);
-            padding-left: 10px;
-            margin-bottom: 16px;
+            letter-spacing: .1em;
+            color: var(--blue);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 18px;
         }
-        .card-title.green  { border-color: var(--green); }
-        .card-title.amber  { border-color: var(--amber); }
-        .card-title.purple { border-color: var(--purple); }
-        .card-title.red    { border-color: var(--red); }
+        .card-title::before {
+            content: '';
+            width: 20px; height: 2px;
+            background: var(--blue);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .card-title.green  { color: var(--green); }
+        .card-title.green::before  { background: var(--green); }
+        .card-title.amber  { color: var(--amber); }
+        .card-title.amber::before  { background: var(--amber); }
+        .card-title.purple { color: var(--purple); }
+        .card-title.purple::before { background: var(--purple); }
+        .card-title.red    { color: var(--red); }
+        .card-title.red::before    { background: var(--red); }
 
         /* ===== FORM ===== */
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
@@ -169,7 +189,7 @@
         input:focus, select:focus {
             outline: none;
             border-color: var(--blue);
-            box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+            box-shadow: 0 0 0 3px rgba(30,111,235,.14);
         }
 
         /* ===== NUMBER INPUT WITH ±  ===== */
@@ -183,36 +203,42 @@
         .num-ctrl {
             display: flex;
             align-items: center;
-            border: 2px solid var(--border);
+            border: 1.5px solid var(--border);
             border-radius: var(--radius-sm);
             overflow: hidden;
-            background: #F8FAFC;
+            background: #FBFCFE;
+            transition: border-color .2s, box-shadow .2s;
         }
+        .num-ctrl:hover { border-color: var(--border-strong); }
+        .num-ctrl:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(30,111,235,.14); }
         .num-ctrl input[type="number"] {
             border: none;
             border-radius: 0;
             text-align: center;
-            padding: 8px 2px;
-            font-size: 15px;
+            padding: 9px 2px;
+            font-size: 17px;
             font-weight: 700;
+            font-family: var(--font-num);
             font-variant-numeric: tabular-nums;
+            letter-spacing: -.02em;
             min-width: 0;
             flex: 1;
+            background: transparent;
         }
         .num-ctrl input:focus { box-shadow: none; }
         .num-btn {
-            width: 32px; min-width: 32px; height: 38px;
-            background: #EEF2F7;
+            width: 30px; min-width: 30px; height: 40px;
+            background: transparent;
             border: none;
             cursor: pointer;
             font-size: 16px;
             font-weight: 700;
-            color: var(--text-secondary);
+            color: var(--text-muted);
             transition: background .15s, color .15s;
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
         }
-        .num-btn:hover { background: var(--blue-mid); color: var(--blue); }
+        .num-btn:hover { background: var(--blue-light); color: var(--blue); }
         .num-btn:active { background: var(--blue); color: #fff; }
         .axis-row {
             display: flex; align-items: center; gap: 4px;
@@ -276,17 +302,19 @@
             white-space: nowrap;
         }
         .btn-primary {
-            background: var(--blue); color: #fff;
-            box-shadow: 0 2px 8px rgba(37,99,235,.25);
+            background: var(--blue-grad); color: #fff;
+            box-shadow: var(--shadow-blue);
         }
-        .btn-primary:hover { background: #1D4ED8; box-shadow: 0 4px 16px rgba(37,99,235,.35); }
-        .btn-success { background: var(--green); color: #fff; }
-        .btn-success:hover { background: #047857; }
-        .btn-danger { background: none; border: 1px solid var(--red); color: var(--red); }
-        .btn-danger:hover { background: var(--red-light); }
-        .btn-ghost { background: none; border: 1px solid var(--border); color: var(--text-secondary); }
-        .btn-ghost:hover { background: var(--bg); }
-        .btn-lg { padding: 13px 24px; font-size: 14px; border-radius: 10px; width: 100%; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(30,111,235,.36); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-success { background: var(--green-grad); color: #fff; box-shadow: 0 6px 16px rgba(14,159,110,.26); }
+        .btn-success:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(14,159,110,.34); }
+        .btn-success:active { transform: translateY(0); }
+        .btn-danger { background: none; border: 1px solid #F3C6CF; color: var(--red); }
+        .btn-danger:hover { background: var(--red-light); border-color: var(--red); }
+        .btn-ghost { background: none; border: 1px solid var(--border-strong); color: var(--text-secondary); }
+        .btn-ghost:hover { background: var(--blue-light); border-color: #C9DBF5; color: var(--blue); }
+        .btn-lg { padding: 14px 24px; font-size: 14px; border-radius: 12px; width: 100%; }
         .btn-row { display: flex; gap: 10px; }
 
         /* ===== RESULTS ===== */
@@ -308,7 +336,7 @@
         .rx-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; border-bottom: 1px solid var(--border); }
         .rx-row:last-child { border-bottom: none; }
         .rx-key { font-size: 12px; color: var(--text-secondary); }
-        .rx-val { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+        .rx-val { font-size: 15px; font-weight: 700; font-family: var(--font-num); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
         .rx-val.positive { color: var(--amber); }
         .rx-val.negative { color: var(--blue); }
         .rx-val.add-val { color: var(--purple); }
@@ -323,16 +351,18 @@
         .add-banner-label { font-size: 12px; font-weight: 600; color: var(--purple); }
         .add-banner-val { font-size: 20px; font-weight: 800; color: var(--purple); font-variant-numeric: tabular-nums; }
         .lens-card {
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-strong);
             border-radius: var(--radius-sm);
-            padding: 12px;
-            margin-bottom: 8px;
+            padding: 14px;
+            margin-bottom: 10px;
+            background: #FBFCFE;
         }
         .lens-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px; }
         .lens-name { font-size: 13px; font-weight: 700; }
         .lens-note { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-        .lens-distance { font-size: 11px; background: var(--blue-mid); color: var(--blue); padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+        .lens-distance { font-size: 11px; background: var(--blue-light); color: var(--blue); padding: 3px 10px; border-radius: 20px; white-space: nowrap; font-weight: 600; }
         .lens-data { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .rx-val, .lens-data .rx-val { font-family: var(--font-num); }
         .lens-eye-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
         .advice-item {
             background: var(--blue-light);
@@ -384,7 +414,7 @@
             color: var(--text-secondary);
         }
         .quiz-cat-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
-        .quiz-cat-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+        .quiz-cat-btn.active { background: var(--blue-grad); color: #fff; border-color: transparent; box-shadow: var(--shadow-blue); }
         .quiz-badge {
             display: inline-block;
             padding: 2px 8px; border-radius: 10px;
@@ -414,9 +444,10 @@
         }
         .quiz-num { font-size: 12px; color: var(--text-muted); margin-left: auto; }
         .quiz-scenario {
-            background: var(--bg);
+            background: var(--blue-light);
+            border: 1px solid #DCEAFE;
             border-radius: var(--radius-sm);
-            padding: 16px;
+            padding: 16px 18px;
             font-size: 14px;
             line-height: 1.8;
             margin-bottom: 20px;
@@ -426,22 +457,23 @@
         .choices { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
         .choice-btn {
             width: 100%; text-align: left;
-            padding: 14px 18px;
-            border: 2px solid var(--border);
+            padding: 15px 18px;
+            border: 1.5px solid var(--border-strong);
             border-radius: var(--radius-sm);
             background: var(--card);
             font-size: 14px; font-weight: 500;
             cursor: pointer;
-            transition: all .2s;
+            transition: all .18s;
             display: flex; align-items: center; gap: 12px;
         }
-        .choice-btn:hover:not(:disabled) { border-color: var(--blue); background: var(--blue-light); }
+        .choice-btn:hover:not(:disabled) { border-color: var(--blue); background: var(--blue-light); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
         .choice-label {
             width: 28px; height: 28px; border-radius: 50%;
-            border: 2px solid var(--border);
+            border: 1.5px solid var(--border-strong);
             display: flex; align-items: center; justify-content: center;
             font-size: 12px; font-weight: 700; flex-shrink: 0;
-            transition: all .2s;
+            font-family: var(--font-num);
+            transition: all .18s;
         }
         .choice-btn:hover:not(:disabled) .choice-label { border-color: var(--blue); color: var(--blue); }
         .choice-btn.correct { border-color: var(--green); background: var(--green-light); }
@@ -455,14 +487,14 @@
         .result-correct {
             background: var(--green-light);
             border: 1px solid #A7F3D0;
-            border-radius: var(--radius-sm);
-            padding: 16px; margin-bottom: 16px;
+            border-radius: var(--radius);
+            padding: 18px; margin-bottom: 16px;
         }
         .result-wrong {
             background: var(--red-light);
-            border: 1px solid #FECACA;
-            border-radius: var(--radius-sm);
-            padding: 16px; margin-bottom: 16px;
+            border: 1px solid #FBCFE0;
+            border-radius: var(--radius);
+            padding: 18px; margin-bottom: 16px;
         }
         .result-label { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
         .result-correct .result-label { color: var(--green); }
@@ -474,14 +506,14 @@
         .progress-bar-wrap {
             flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
         }
-        .progress-bar { height: 100%; background: var(--blue); border-radius: 3px; transition: width .4s; }
-        .score-display { font-size: 13px; font-weight: 700; color: var(--blue); white-space: nowrap; }
+        .progress-bar { height: 100%; background: var(--blue-grad); border-radius: 3px; transition: width .4s; }
+        .score-display { font-size: 13px; font-weight: 700; color: var(--blue); white-space: nowrap; font-family: var(--font-num); }
         .stats-card {
             background: var(--bg); border-radius: var(--radius-sm); padding: 16px;
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: center;
             margin-bottom: 16px;
         }
-        .stat-num { font-size: 24px; font-weight: 800; }
+        .stat-num { font-size: 24px; font-weight: 800; font-family: var(--font-num); letter-spacing: -.02em; }
         .stat-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
         .stat-correct .stat-num { color: var(--green); }
         .stat-wrong .stat-num { color: var(--red); }
@@ -507,6 +539,138 @@
         .rank-a { background: var(--green-light); color: var(--green); }
         .rank-b { background: var(--blue-light); color: var(--blue); }
         .rank-c { background: var(--red-light); color: var(--red); }
+        /* ===== 調整幅バー ===== */
+        .adjust-bar-card {
+            background: var(--blue-light);
+            border: 1px solid #DCEAFE;
+            border-radius: var(--radius-sm);
+            padding: 16px 18px;
+            margin-bottom: 16px;
+        }
+        .adjust-bar-title {
+            font-size: 12px; font-weight: 700; color: var(--blue);
+            margin-bottom: 4px; letter-spacing: .02em;
+        }
+        .adjust-bar-sub {
+            font-size: 11px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px;
+        }
+        .adjust-bar-eye { margin-bottom: 18px; }
+        .adjust-bar-eye:last-child { margin-bottom: 0; }
+        .adjust-bar-eye-label {
+            font-size: 11px; font-weight: 700; color: var(--text-secondary);
+            text-transform: uppercase; letter-spacing: .05em; margin-bottom: 10px;
+        }
+        .adjust-bar-track {
+            position: relative; height: 8px;
+            background: linear-gradient(90deg, #C7DCFB, var(--blue));
+            border-radius: 6px; margin: 22px 6px 8px;
+        }
+        .adjust-bar-dot {
+            position: absolute; top: 50%; width: 16px; height: 16px;
+            background: #fff; border: 3px solid var(--blue);
+            border-radius: 50%; transform: translate(-50%, -50%);
+            box-shadow: 0 2px 6px rgba(30,111,235,.3);
+        }
+        .adjust-bar-dot.full { border-color: var(--blue-strong); background: var(--blue-strong); }
+        .adjust-bar-label {
+            position: absolute; top: -20px; font-size: 11px; font-weight: 700;
+            font-family: var(--font-num); white-space: nowrap; transform: translateX(-50%);
+        }
+        .adjust-bar-label.guide { color: var(--blue); }
+        .adjust-bar-label.full  { color: var(--blue-strong); }
+        .adjust-bar-ends {
+            display: flex; justify-content: space-between;
+            font-size: 10px; color: var(--text-muted); margin: 0 6px;
+        }
+        .adjust-bar-note {
+            display: flex; gap: 14px; margin-top: 14px; flex-wrap: wrap;
+        }
+        .adjust-bar-note-item {
+            font-size: 11px; color: var(--text-secondary); line-height: 1.6;
+            flex: 1; min-width: 130px;
+        }
+        .adjust-bar-note-item b { color: var(--text-primary); }
+
+        /* ===== 症例相談モード ===== */
+        .soudan-wrap { max-width: 720px; margin: 0 auto; }
+        .soudan-intro {
+            background: var(--blue-light); border: 1px solid #DCEAFE;
+            border-radius: var(--radius); padding: 18px 20px; margin-bottom: 20px;
+        }
+        .soudan-intro h2 { font-size: 16px; font-weight: 700; color: var(--blue); margin-bottom: 6px; }
+        .soudan-intro p { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+        .soudan-section-label {
+            font-size: 11px; font-weight: 700; color: var(--blue);
+            text-transform: uppercase; letter-spacing: .08em;
+            display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+        }
+        .soudan-section-label::before { content: ''; width: 18px; height: 2px; background: var(--blue); border-radius: 2px; }
+        .soudan-field { margin-bottom: 16px; }
+        .soudan-field > label {
+            display: block; font-size: 12px; font-weight: 600;
+            color: var(--text-secondary); margin-bottom: 6px;
+        }
+        .soudan-va-grid {
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+        }
+        .soudan-va-grid .va-col label {
+            display: block; font-size: 10px; font-weight: 600; color: var(--text-muted);
+            text-align: center; margin-bottom: 4px;
+        }
+        .soudan-eye-row {
+            display: grid; grid-template-columns: 40px 1fr 1fr 1fr; gap: 8px;
+            align-items: center; margin-bottom: 8px;
+        }
+        .soudan-eye-row .eye-tag {
+            font-size: 11px; font-weight: 700; color: var(--text-secondary); text-align: center;
+        }
+        .soudan-eye-head {
+            display: grid; grid-template-columns: 40px 1fr 1fr 1fr; gap: 8px; margin-bottom: 6px;
+        }
+        .soudan-eye-head span {
+            font-size: 10px; font-weight: 600; color: var(--text-muted);
+            text-transform: uppercase; text-align: center;
+        }
+        .soudan-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .soudan-chip {
+            font-size: 13px; font-weight: 600; padding: 9px 16px; border-radius: 22px;
+            border: 1.5px solid var(--border-strong); color: var(--text-secondary);
+            background: #fff; cursor: pointer; transition: all .18s;
+        }
+        .soudan-chip:hover { border-color: #C9DBF5; background: var(--blue-light); }
+        .soudan-chip.active { border-color: transparent; background: var(--blue-grad); color: #fff; box-shadow: var(--shadow-blue); }
+        .soudan-deep {
+            margin-top: 14px; padding: 16px; background: #FBFCFE;
+            border: 1px solid var(--border); border-radius: var(--radius-sm);
+        }
+        .soudan-deep-title { font-size: 12px; font-weight: 700; color: var(--blue); margin-bottom: 12px; }
+        .soudan-result-card {
+            margin-top: 20px; background: var(--green-light); border: 1px solid #A7F3D0;
+            border-radius: var(--radius); padding: 20px;
+        }
+        .soudan-result-title { font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 14px; }
+        .soudan-data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .soudan-data-table th {
+            background: #fff; color: var(--text-secondary); text-align: left;
+            padding: 7px 10px; font-size: 10px; text-transform: uppercase; letter-spacing: .04em;
+            border-bottom: 1px solid var(--border);
+        }
+        .soudan-data-table td {
+            padding: 7px 10px; border-bottom: 1px solid #E8F5EE;
+            font-family: var(--font-num); font-weight: 600;
+        }
+        .soudan-data-table td:first-child { font-family: 'Inter'; color: var(--text-secondary); font-weight: 500; }
+        .sd-pow { display: flex; gap: 4px; min-width: 0; }
+        .sd-pow select { flex: 1; min-width: 0; padding-left: 6px; padding-right: 4px; }
+        .sd-sign-btn {
+            width: 30px; min-width: 30px; border-radius: 9px;
+            border: 1.5px solid var(--border-strong); background: #fff;
+            font-size: 16px; font-weight: 700; cursor: pointer;
+            color: var(--blue); transition: all .15s;
+        }
+        .sd-sign-btn:hover { background: var(--blue-light); }
+        .sd-sign-btn.plus { color: var(--amber); border-color: #FCE4B6; background: var(--amber-light); }
+
     </style>
 </head>
 <body>
@@ -533,6 +697,7 @@
     <div class="tabs-inner">
         <button class="tab-btn active" onclick="switchTab('calc', this)">処方計算</button>
         <button class="tab-btn" onclick="switchTab('practice', this)">練習問題</button>
+        <button class="tab-btn" onclick="switchTab('soudan', this)">症例相談</button>
     </div>
 </div>
 
@@ -967,11 +1132,649 @@
     </div>
 </div>
 
+<!-- ========== PAGE: 症例相談 ========== -->
+<div id="page-soudan" class="page-content">
+    <div class="soudan-wrap">
+        <div class="soudan-intro">
+            <h2>症例相談モード（高精度フォーム）</h2>
+            <p>患者さんのデータを入力すると、主訴をベースにした参考度数の相談ができます。わかる範囲で大丈夫です。データが揃うほど精度が上がります。</p>
+        </div>
+
+        <!-- 基本情報 -->
+        <div class="card">
+            <div class="soudan-section-label">基本情報</div>
+            <div class="soudan-field">
+                <label>年齢</label>
+                <input type="number" id="sd_age" placeholder="例: 52" style="width:120px;">
+            </div>
+            <div class="soudan-field">
+                <label>主訴（一番困っていること・希望）</label>
+                <div class="soudan-chips" id="sd_complaint_chips">
+                    <div class="soudan-chip" onclick="sdSelectComplaint('distance', this)">遠くが見えにくい</div>
+                    <div class="soudan-chip" onclick="sdSelectComplaint('near', this)">近くが見えにくい</div>
+                    <div class="soudan-chip" onclick="sdSelectComplaint('tired', this)">疲れる</div>
+                    <div class="soudan-chip" onclick="sdSelectComplaint('license', this)">免許更新</div>
+                    <div class="soudan-chip" onclick="sdSelectComplaint('other', this)">その他</div>
+                </div>
+                <!-- 深掘り質問（主訴に応じて出る） -->
+                <div id="sd_deep_distance" class="soudan-deep hidden">
+                    <div class="soudan-deep-title">遠くの見え方について</div>
+                    <div class="soudan-field">
+                        <label>運転はしますか？</label>
+                        <div class="soudan-chips">
+                            <div class="soudan-chip" onclick="sdToggleChip(this,'sd_drive'); sdCheckLicense();">する</div>
+                            <div class="soudan-chip" onclick="sdToggleChip(this,'sd_drive'); sdCheckLicense();">しない</div>
+                        </div>
+                    </div>
+                    <div class="soudan-field">
+                        <label>どのくらい遠くを見たいですか？</label>
+                        <div class="soudan-chips">
+                            <div class="soudan-chip" onclick="sdToggleChip(this,'sd_far_want')">しっかり見たい</div>
+                            <div class="soudan-chip" onclick="sdToggleChip(this,'sd_far_want')">そこそこでいい</div>
+                        </div>
+                    </div>
+                    <div id="sd_license_extra" class="hidden">
+                        <div class="soudan-field">
+                            <label>免許の種類は？（普通=視力0.7 / 大型=0.8 必要）</label>
+                            <div class="soudan-chips">
+                                <div class="soudan-chip" onclick="sdToggleChip(this,'sd_license_type')">普通免許</div>
+                                <div class="soudan-chip" onclick="sdToggleChip(this,'sd_license_type')">大型免許</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="sd_deep_near" class="soudan-deep hidden">
+                    <div class="soudan-deep-title">近くの見え方について</div>
+                    <div class="soudan-field">
+                        <label>手元は何センチくらいで見たいですか？</label>
+                        <input type="text" id="sd_near_dist" placeholder="例: 30〜40cm" style="width:180px;">
+                    </div>
+                    <div class="soudan-field">
+                        <label>パソコンは？</label>
+                        <div class="soudan-chips">
+                            <div class="soudan-chip" onclick="sdToggleChip(this,'sd_pc')">ノート</div>
+                            <div class="soudan-chip" onclick="sdToggleChip(this,'sd_pc')">デスクトップ</div>
+                            <div class="soudan-chip" onclick="sdToggleChip(this,'sd_pc')">両方</div>
+                            <div class="soudan-chip" onclick="sdToggleChip(this,'sd_pc')">使わない</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="sd_deep_tired" class="soudan-deep hidden">
+                    <div class="soudan-deep-title">疲れについて</div>
+                    <div class="soudan-field">
+                        <label>どんな作業で疲れますか？</label>
+                        <input type="text" id="sd_tired_task" placeholder="例: 長時間のPC作業、読書" style="width:100%;">
+                    </div>
+                    <div class="soudan-field">
+                        <label>新しい眼鏡を使う環境は？</label>
+                        <input type="text" id="sd_tired_env" placeholder="例: オフィス、自宅" style="width:100%;">
+                    </div>
+                </div>
+                <div id="sd_deep_license" class="soudan-deep hidden">
+                    <div class="soudan-deep-title">免許更新について</div>
+                    <div class="soudan-field">
+                        <label>免許の種類は？（普通=視力0.7 / 大型=0.8 必要）</label>
+                        <div class="soudan-chips">
+                            <div class="soudan-chip" onclick="sdToggleChip(this,'sd_license_type2')">普通免許</div>
+                            <div class="soudan-chip" onclick="sdToggleChip(this,'sd_license_type2')">大型免許</div>
+                        </div>
+                    </div>
+                    <div class="soudan-field">
+                        <label>見え方の希望は？</label>
+                        <div class="soudan-chips">
+                            <div class="soudan-chip" onclick="sdToggleChip(this,'sd_license_level')">最低ラインが通ればいい</div>
+                            <div class="soudan-chip" onclick="sdToggleChip(this,'sd_license_level')">しっかり見たい</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 全主訴共通 -->
+                <div id="sd_deep_common" class="soudan-deep hidden">
+                    <div class="soudan-deep-title">共通の確認</div>
+                    <div class="soudan-field">
+                        <label>コンタクトとの関係は？</label>
+                        <div class="soudan-chips">
+                            <div class="soudan-chip" onclick="sdToggleChip(this,'sd_contact')">コンタクトは使わない</div>
+                            <div class="soudan-chip" onclick="sdToggleChip(this,'sd_contact')">外した後だけ眼鏡</div>
+                            <div class="soudan-chip" onclick="sdToggleChip(this,'sd_contact')">コンタクトの上からかける</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 現用眼鏡（KB） -->
+        <div class="card">
+            <div class="soudan-section-label">現用眼鏡（KB）</div>
+            <div class="soudan-field">
+                <label>KBはありますか？</label>
+                <div class="soudan-chips">
+                    <div class="soudan-chip" onclick="sdToggleKB(this, true)">あり</div>
+                    <div class="soudan-chip" onclick="sdToggleKB(this, false)">なし（初めて）</div>
+                </div>
+            </div>
+            <div id="sd_kb_detail" class="hidden">
+                <div class="soudan-field">
+                    <label>KBの種類（わかれば・任意）</label>
+                    <div class="soudan-chips">
+                        <div class="soudan-chip" onclick="sdToggleChip(this,'sd_kb_type')">単焦点</div>
+                        <div class="soudan-chip" onclick="sdToggleChip(this,'sd_kb_type')">遠近両用</div>
+                        <div class="soudan-chip" onclick="sdToggleChip(this,'sd_kb_type')">中近両用</div>
+                        <div class="soudan-chip" onclick="sdToggleChip(this,'sd_kb_type')">近々両用</div>
+                    </div>
+                </div>
+                <div class="soudan-field">
+                    <label>使用年数</label>
+                    <input type="number" id="sd_kb_years" placeholder="例: 3" style="width:120px;"> 年
+                </div>
+                <div class="soudan-field">
+                    <label>KB度数（−＋ボタンで符号を切替→一覧から選ぶ）</label>
+                    <div class="soudan-eye-head"><span></span><span>SPH</span><span>CYL</span><span>AXIS</span></div>
+                    <div class="soudan-eye-row"><span class="eye-tag">右</span>
+                        <div class="sd-pow"><button type="button" class="sd-sign-btn" onclick="sdToggleSign('sd_kb_r_sph', this)">−</button><select id="sd_kb_r_sph"></select></div>
+                        <select id="sd_kb_r_cyl"></select>
+                        <input type="text" id="sd_kb_r_ax" placeholder="軸"></div>
+                    <div class="soudan-eye-row"><span class="eye-tag">左</span>
+                        <div class="sd-pow"><button type="button" class="sd-sign-btn" onclick="sdToggleSign('sd_kb_l_sph', this)">−</button><select id="sd_kb_l_sph"></select></div>
+                        <select id="sd_kb_l_cyl"></select>
+                        <input type="text" id="sd_kb_l_ax" placeholder="軸"></div>
+                </div>
+                <div class="soudan-field">
+                    <label>KB加入度数（遠近・中近の場合）</label>
+                    <select id="sd_kb_add" style="width:150px;"></select>
+                </div>
+            </div>
+        </div>
+
+        <!-- AR値 -->
+        <div class="card">
+            <div class="soudan-section-label">AR値（オートレフ）</div>
+            <div class="soudan-eye-head"><span></span><span>SPH</span><span>CYL</span><span>AXIS</span></div>
+            <div class="soudan-eye-row"><span class="eye-tag">右</span>
+                <div class="sd-pow"><button type="button" class="sd-sign-btn" onclick="sdToggleSign('sd_ar_r_sph', this)">−</button><select id="sd_ar_r_sph"></select></div>
+                <select id="sd_ar_r_cyl"></select>
+                <input type="text" id="sd_ar_r_ax" placeholder="軸"></div>
+            <div class="soudan-eye-row"><span class="eye-tag">左</span>
+                <div class="sd-pow"><button type="button" class="sd-sign-btn" onclick="sdToggleSign('sd_ar_l_sph', this)">−</button><select id="sd_ar_l_sph"></select></div>
+                <select id="sd_ar_l_cyl"></select>
+                <input type="text" id="sd_ar_l_ax" placeholder="軸"></div>
+        </div>
+
+        <!-- 裸眼視力 -->
+        <div class="card">
+            <div class="soudan-section-label">裸眼視力</div>
+            <div class="soudan-eye-head" style="grid-template-columns:1fr 1fr 1fr;"><span>右</span><span>左</span><span>両目</span></div>
+            <div class="soudan-va-grid">
+                <select id="sd_va_naked_r"></select><select id="sd_va_naked_l"></select><select id="sd_va_naked_b"></select>
+            </div>
+        </div>
+
+        <!-- KB矯正視力（KBありのとき表示） -->
+        <div class="card hidden" id="sd_va_kb_card">
+            <div class="soudan-section-label">KB矯正視力</div>
+            <div class="soudan-eye-head" style="grid-template-columns:1fr 1fr 1fr;"><span>右</span><span>左</span><span>両目</span></div>
+            <div class="soudan-va-grid">
+                <select id="sd_va_kb_r"></select><select id="sd_va_kb_l"></select><select id="sd_va_kb_b"></select>
+            </div>
+        </div>
+
+        <!-- 完全矯正値（7M）＋視力 -->
+        <div class="card">
+            <div class="soudan-section-label">完全矯正値（7M）</div>
+            <div class="soudan-eye-head"><span></span><span>SPH</span><span>CYL</span><span>AXIS</span></div>
+            <div class="soudan-eye-row"><span class="eye-tag">右</span>
+                <div class="sd-pow"><button type="button" class="sd-sign-btn" onclick="sdToggleSign('sd_fc_r_sph', this)">−</button><select id="sd_fc_r_sph"></select></div>
+                <select id="sd_fc_r_cyl"></select>
+                <input type="text" id="sd_fc_r_ax" placeholder="軸"></div>
+            <div class="soudan-eye-row"><span class="eye-tag">左</span>
+                <div class="sd-pow"><button type="button" class="sd-sign-btn" onclick="sdToggleSign('sd_fc_l_sph', this)">−</button><select id="sd_fc_l_sph"></select></div>
+                <select id="sd_fc_l_cyl"></select>
+                <input type="text" id="sd_fc_l_ax" placeholder="軸"></div>
+            <div class="soudan-field" style="margin-top:12px;">
+                <label>完全矯正値の加入度数</label>
+                <select id="sd_fc_add" style="width:150px;"></select>
+            </div>
+            <div class="soudan-field" style="margin-top:12px;">
+                <label>完全矯正値の視力</label>
+                <div class="soudan-eye-head" style="grid-template-columns:1fr 1fr 1fr;"><span>右</span><span>左</span><span>両目</span></div>
+                <div class="soudan-va-grid">
+                    <select id="sd_va_fc_r"></select><select id="sd_va_fc_l"></select><select id="sd_va_fc_b"></select>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-primary btn-lg" onclick="sdCollect()">この内容で相談する</button>
+
+        <!-- 集めたデータの確認表示（第一段階はここまで） -->
+        <div id="sd_result"></div>
+    </div>
+</div>
+
 <script>
+// ===========================
+// 症例相談モード（第一段階：データ収集）
+// ===========================
+let sdComplaint = null;          // 選ばれた主訴
+let sdChoices = {};              // チップ選択の記録
+
+function sdSelectComplaint(type, el) {
+    sdComplaint = type;
+    // チップの見た目を切り替え
+    document.querySelectorAll('#sd_complaint_chips .soudan-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    // 深掘りブロックを一旦すべて隠す
+    ['distance','near','tired','license'].forEach(t => {
+        document.getElementById('sd_deep_' + t).classList.add('hidden');
+    });
+    // 選ばれた主訴の深掘りだけ出す
+    if (document.getElementById('sd_deep_' + type)) {
+        document.getElementById('sd_deep_' + type).classList.remove('hidden');
+    }
+    // 共通の確認は常に出す
+    document.getElementById('sd_deep_common').classList.remove('hidden');
+}
+
+// チップのオン・オフ（同じグループ内は1つだけ選択）
+function sdToggleChip(el, group) {
+    // 同じグループの他のチップを解除
+    const parent = el.parentElement;
+    parent.querySelectorAll('.soudan-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    sdChoices[group] = el.textContent.trim();
+}
+
+// 「遠くが見えにくい」で運転する→免許の種類を聞く
+function sdCheckLicense() {
+    const extra = document.getElementById('sd_license_extra');
+    if (sdChoices['sd_drive'] === 'する') {
+        extra.classList.remove('hidden');
+    } else {
+        extra.classList.add('hidden');
+    }
+}
+
+// KBあり・なしの切り替え
+function sdToggleKB(el, has) {
+    const parent = el.parentElement;
+    parent.querySelectorAll('.soudan-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    sdChoices['sd_hasKB'] = has;
+    document.getElementById('sd_kb_detail').classList.toggle('hidden', !has);
+    document.getElementById('sd_va_kb_card').classList.toggle('hidden', !has);
+}
+
+// 入力値を取る小さなヘルパー
+function sdV(id) { const e = document.getElementById(id); return e ? e.value.trim() : ''; }
+
+// ===========================
+// 度数プルダウンの中身を作る
+// ===========================
+// SPH用：符号に応じて 0.00〜15.00 を0.25刻みで並べる
+function sdFillPower(id, sign) {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    let html = '<option value="">--</option>';
+    for (let v = 0; v <= 15.001; v += 0.25) {
+        const label = v === 0 ? '0.00' : (sign < 0 ? '-' : '+') + v.toFixed(2);
+        html += '<option value="' + label + '">' + label + '</option>';
+    }
+    sel.innerHTML = html;
+}
+// 乱視用：マイナスのみ 0.00〜-6.00 を0.25刻み
+function sdFillCyl(id) {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    let html = '<option value="">--</option>';
+    for (let v = 0; v <= 6.001; v += 0.25) {
+        const label = v === 0 ? '0.00' : '-' + v.toFixed(2);
+        html += '<option value="' + label + '">' + label + '</option>';
+    }
+    sel.innerHTML = html;
+}
+// 加入用：+0.50〜+3.50 を0.25刻み
+function sdFillAdd(id) {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    let html = '<option value="">--（なし）</option>';
+    for (let v = 0.50; v <= 3.501; v += 0.25) {
+        const label = '+' + v.toFixed(2);
+        html += '<option value="' + label + '">' + label + '</option>';
+    }
+    sel.innerHTML = html;
+}
+// 視力用：0.1〜0.9, 1.0, 1.2, 1.5
+function sdFillVA(id) {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const vals = ['0.1','0.2','0.3','0.4','0.5','0.6','0.7','0.8','0.9','1.0','1.2','1.5'];
+    let html = '<option value="">--</option>';
+    vals.forEach(v => { html += '<option value="' + v + '">' + v + '</option>'; });
+    sel.innerHTML = html;
+}
+// −＋ボタン：符号を切り替えて一覧を作り直す（選択中の値は符号だけ変えて維持）
+function sdToggleSign(selId, btn) {
+    const toPlus = btn.textContent.trim() === '−';
+    btn.textContent = toPlus ? '＋' : '−';
+    btn.classList.toggle('plus', toPlus);
+    const sel = document.getElementById(selId);
+    const abs = sel.value !== '' ? Math.abs(parseFloat(sel.value)) : null;
+    sdFillPower(selId, toPlus ? 1 : -1);
+    if (abs !== null && !isNaN(abs)) {
+        sel.value = abs === 0 ? '0.00' : (toPlus ? '+' : '-') + abs.toFixed(2);
+    }
+}
+// すべてのプルダウンを初期状態（SPHはマイナス側）で用意する
+function sdInitSelects() {
+    ['sd_kb_r_sph','sd_kb_l_sph','sd_ar_r_sph','sd_ar_l_sph','sd_fc_r_sph','sd_fc_l_sph'].forEach(id => sdFillPower(id, -1));
+    ['sd_kb_r_cyl','sd_kb_l_cyl','sd_ar_r_cyl','sd_ar_l_cyl','sd_fc_r_cyl','sd_fc_l_cyl'].forEach(id => sdFillCyl(id));
+    ['sd_kb_add','sd_fc_add'].forEach(id => sdFillAdd(id));
+    ['sd_va_naked_r','sd_va_naked_l','sd_va_naked_b','sd_va_kb_r','sd_va_kb_l','sd_va_kb_b','sd_va_fc_r','sd_va_fc_l','sd_va_fc_b'].forEach(id => sdFillVA(id));
+}
+
+// ===========================
+// レンズ移行の階段（遠近→中近→近々）
+// ===========================
+function sdBuildTransition(rx) {
+    const age = parseInt(sdV('sd_age')) || 0;
+    const fmt = (v) => (v >= 0 ? '+' : '') + Number(v).toFixed(2);
+    const recAdd = getRecommendedAddPower(age);
+    if (age < 40 || recAdd <= 0) return '';   // 老視がなければ移行の話は出さない
+
+    // 完全矯正値ベースの加入。S面を2段階(0.50)下げても加入が2.25を超えるか
+    // （加入は年齢推奨または入力された完全矯正値の加入の大きい方）
+    const fcAdd = parseFloat(sdV('sd_fc_add')) || recAdd;
+    // S面を2段階下げれば、そのぶん加入も下げられる → 実質 fcAdd - 0.50
+    const addAfterEase = fcAdd - 0.50;
+    const stillOver = addAfterEase > 2.25;   // 下げても2.25超なら移行タイミング
+
+    if (!stillOver) return '';   // まだ今のレンズで対応できる
+
+    const kbType = sdChoices['sd_kb_type'];   // 単焦点/遠近両用/中近両用/近々両用 or undefined
+    const near = (sdComplaint === 'near');    // 手元が見えにくい
+    const pc = (sdComplaint === 'distance' || sdComplaint === 'tired');  // 中間(PC)想定は控えめに
+
+    let title = '', body = '';
+
+    // 中近をかけていて手元が見えにくい → 近々へ
+    if (kbType === '中近両用' && near) {
+        title = '近々両用への移行タイミング';
+        body = '中近でも手元が見えにくくなってきています。手元を重視する<b>近々両用</b>への移行を検討するタイミングです（近々は手元6・パソコン4のイメージで、パソコンは少し見えにくくなります）。';
+        body += sdBuildKinkinDetail(rx, recAdd);
+    }
+    // 遠近をかけていてパソコン(中間)が見えにくい → 中近へ
+    else if (kbType === '遠近両用') {
+        title = '中近両用への移行タイミング';
+        body = '遠近で加入を上げても、中間（パソコン）の見える範囲は狭いままです。まず遠方をどこまで残すか確認し、S面を下げても加入が下がらない場合は、<b>中近両用</b>への移行を検討するタイミングです。';
+    }
+    // KBの種類が不明 → やんわり条件つき
+    else if (!kbType) {
+        title = '移行の検討（参考）';
+        if (near) {
+            body = 'もし今かけているのが中近なら、手元を重視する<b>近々両用</b>への移行も検討できます。';
+            body += sdBuildKinkinDetail(rx, recAdd);
+        } else {
+            body = 'もし今かけているのが遠近なら、中間（パソコン）を広く見やすくする<b>中近両用</b>への移行も検討できます。';
+        }
+    } else {
+        return '';   // 単焦点や近々など、今回の階段に当てはまらない場合は出さない
+    }
+
+    return '<div class="soudan-result-card" style="background:var(--purple-light);border-color:#E9D5FF;">' +
+        '<div class="soudan-result-title" style="color:var(--purple);">' + title + '</div>' +
+        '<div style="font-size:13px;color:#334155;line-height:1.9;">' + body + '</div>' +
+        '<div style="margin-top:12px;padding:10px 13px;background:#fff;border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--text-secondary);line-height:1.7;">最終的にどのレンズにするかは、本人の生活・用途を確認しながら決めてください。数字は目安です。</div>' +
+        '</div>';
+}
+
+// 近々の手元度数＋逆加入のパソコン度数
+function sdBuildKinkinDetail(rx, recAdd) {
+    const fmt = (v) => (v >= 0 ? '+' : '') + Number(v).toFixed(2);
+    const R = rx.right, L = rx.left;
+    // 手元 = 遠用 + 年齢推奨の加入
+    const rNear = Math.round((R.sph + recAdd) * 4) / 4;
+    const lNear = Math.round((L.sph + recAdd) * 4) / 4;
+    let h = '<div style="margin-top:12px;font-size:12px;font-weight:700;color:var(--purple);">近々・手元の度数</div>';
+    h += '<table class="soudan-data-table"><tr><th></th><th>SPH</th><th>CYL</th><th>AXIS</th></tr>' +
+        '<tr><td>右眼</td><td>' + fmt(rNear) + '</td><td>' + fmt(R.cyl) + '</td><td>' + R.axis + '°</td></tr>' +
+        '<tr><td>左眼</td><td>' + fmt(lNear) + '</td><td>' + fmt(L.cyl) + '</td><td>' + L.axis + '°</td></tr></table>';
+    // 逆加入でパソコン位置の度数（3択）
+    h += '<div style="margin-top:10px;font-size:12px;font-weight:700;color:var(--purple);">パソコン位置の度数（逆加入）</div>';
+    h += '<div style="font-size:11px;color:var(--text-secondary);margin-bottom:6px;">手元から逆加入分だけマイナスした度数です。パソコンの距離に合わせて選びます。</div>';
+    h += '<table class="soudan-data-table"><tr><th>逆加入</th><th>右 SPH</th><th>左 SPH</th></tr>';
+    [1.00, 1.50, 2.00].forEach(rev => {
+        const rPC = Math.round((rNear - rev) * 4) / 4;
+        const lPC = Math.round((lNear - rev) * 4) / 4;
+        h += '<tr><td>-' + rev.toFixed(2) + '</td><td>' + fmt(rPC) + '</td><td>' + fmt(lPC) + '</td></tr>';
+    });
+    h += '</table>';
+    return h;
+}
+
+
+function sdBuildUsageOptions(rx) {
+    const age = parseInt(sdV('sd_age')) || 0;
+    const fmt = (v) => (v >= 0 ? '+' : '') + Number(v).toFixed(2);
+    // 加入が必要（40歳以上かつ推奨ADDあり）でなければ用途別は出さない
+    const recAdd = getRecommendedAddPower(age);
+    if (age < 40 || recAdd <= 0) return '';
+
+    // 運転の有無（遠くが見えにくいの深掘り。免許更新の主訴も運転ありとみなす）
+    const drives = (sdChoices['sd_drive'] === 'する') || (sdComplaint === 'license');
+
+    // 遠用度数（参考度数）
+    const R = rx.right, L = rx.left;
+    // 遠近＝遠用＋年齢推奨の加入
+    const kinTable =
+        '<table class="soudan-data-table"><tr><th></th><th>SPH</th><th>CYL</th><th>AXIS</th><th>ADD</th></tr>' +
+        '<tr><td>右眼</td><td>' + fmt(R.sph) + '</td><td>' + fmt(R.cyl) + '</td><td>' + R.axis + '°</td><td>+' + recAdd.toFixed(2) + '</td></tr>' +
+        '<tr><td>左眼</td><td>' + fmt(L.sph) + '</td><td>' + fmt(L.cyl) + '</td><td>' + L.axis + '°</td><td>+' + recAdd.toFixed(2) + '</td></tr></table>';
+
+    // 中近：①完全矯正値そのまま ②遠方を譲るならS面2段階(0.50)戻し
+    const R2 = Math.round((R.sph + 0.50) * 4) / 4;  // 近視は0に近づく＝+0.50
+    const L2 = Math.round((L.sph + 0.50) * 4) / 4;
+    const chukinFull =
+        '<table class="soudan-data-table"><tr><th></th><th>SPH</th><th>CYL</th><th>AXIS</th><th>ADD</th></tr>' +
+        '<tr><td>右眼</td><td>' + fmt(R.sph) + '</td><td>' + fmt(R.cyl) + '</td><td>' + R.axis + '°</td><td>+' + recAdd.toFixed(2) + '</td></tr>' +
+        '<tr><td>左眼</td><td>' + fmt(L.sph) + '</td><td>' + fmt(L.cyl) + '</td><td>' + L.axis + '°</td><td>+' + recAdd.toFixed(2) + '</td></tr></table>';
+    const chukinBack =
+        '<table class="soudan-data-table"><tr><th></th><th>SPH</th><th>CYL</th><th>AXIS</th><th>ADD</th></tr>' +
+        '<tr><td>右眼</td><td>' + fmt(R2) + '</td><td>' + fmt(R.cyl) + '</td><td>' + R.axis + '°</td><td>+' + recAdd.toFixed(2) + '</td></tr>' +
+        '<tr><td>左眼</td><td>' + fmt(L2) + '</td><td>' + fmt(L.cyl) + '</td><td>' + L.axis + '°</td><td>+' + recAdd.toFixed(2) + '</td></tr></table>';
+
+    // 各ブロックのHTML
+    const kinBlock =
+        '<div class="usage-block"><div class="usage-title">遠近両用（運転・遠方もしっかり）</div>' +
+        '<div class="usage-item">遠用度数に加入 +' + recAdd.toFixed(2) + ' を足した度数です。</div>' + kinTable + '</div>';
+    const chukinBlock =
+        '<div class="usage-block"><div class="usage-title">中近両用（デスクワーク・室内中心）</div>' +
+        '<div class="usage-item"><b>遠くもしっかり見たいなら</b>（完全矯正ベース）</div>' + chukinFull +
+        '<div class="usage-item" style="margin-top:10px;"><b>中間・手元を優先し遠方を少し譲るなら</b>（遠用からS面2段階戻し）</div>' + chukinBack +
+        '<div class="usage-note">どちらにするかは、本人がどこまで遠くを見たいかで決めます。</div></div>';
+
+    // 運転の有無で並び順を変える（両方は必ず見せる）
+    const ordered = drives ? (kinBlock + chukinBlock) : (chukinBlock + kinBlock);
+
+    return '<div class="soudan-result-card" style="background:#fff;border-color:var(--border-strong);">' +
+        '<div class="soudan-result-title" style="color:var(--blue);">用途を広げるなら（おススメ）</div>' +
+        '<div style="font-size:12px;color:var(--text-secondary);margin-bottom:14px;">' +
+        (drives ? '運転をされるので、遠近を上に表示しています。' : '運転をされないので、中近を上に表示しています。') +
+        '両方を候補として確認してください。</div>' + ordered + '</div>';
+}
+
+
+// 指定idの欄に値を入れる（無ければ何もしない）
+function sdSet(id, val) { const e = document.getElementById(id); if (e) e.value = (val === undefined || val === null) ? '' : val; }
+
+// 症例相談フォームのデータを処方計算の欄にコピーして計算を実行し、結果rxを返す
+function sdRunCalculation() {
+    // 主訴の対応：遠方/免許更新→1(遠方視力低下)、近く→2(近方視力低下)、疲れる→3(眼精疲労)
+    const complaintMap = { distance:1, license:1, near:2, tired:3, other:1 };
+    chiefComplaints = [ complaintMap[sdComplaint] || 1 ];
+
+    // 年齢
+    sdSet('age', sdV('sd_age'));
+
+    // KB有無
+    const hasKB = (sdChoices['sd_hasKB'] === true);
+    document.getElementById('hasKB').checked = hasKB;
+
+    // KB度数（ありのときだけ）
+    if (hasKB) {
+        sdSet('kbRightSph', sdV('sd_kb_r_sph')); sdSet('kbRightCyl', sdV('sd_kb_r_cyl')); sdSet('kbRightAxis', sdV('sd_kb_r_ax')); sdSet('kbRightAdd', sdV('sd_kb_add'));
+        sdSet('kbLeftSph',  sdV('sd_kb_l_sph')); sdSet('kbLeftCyl',  sdV('sd_kb_l_cyl')); sdSet('kbLeftAxis',  sdV('sd_kb_l_ax')); sdSet('kbLeftAdd',  sdV('sd_kb_add'));
+        sdSet('kbUsageYears', sdV('sd_kb_years'));
+        sdSet('kbRightVision', sdV('sd_va_kb_r')); sdSet('kbLeftVision', sdV('sd_va_kb_l'));
+    } else {
+        ['kbRightSph','kbRightCyl','kbRightAxis','kbRightAdd','kbLeftSph','kbLeftCyl','kbLeftAxis','kbLeftAdd','kbUsageYears','kbRightVision','kbLeftVision'].forEach(id => sdSet(id, ''));
+    }
+
+    // 完全矯正値
+    sdSet('corrRightSph', sdV('sd_fc_r_sph')); sdSet('corrRightCyl', sdV('sd_fc_r_cyl')); sdSet('corrRightAxis', sdV('sd_fc_r_ax')); sdSet('corrRightAdd', sdV('sd_fc_add'));
+    sdSet('corrLeftSph',  sdV('sd_fc_l_sph')); sdSet('corrLeftCyl',  sdV('sd_fc_l_cyl')); sdSet('corrLeftAxis',  sdV('sd_fc_l_ax')); sdSet('corrLeftAdd',  sdV('sd_fc_add'));
+
+    // 患者名（任意）
+    sdSet('patientName', '症例相談');
+
+    // 既存の計算を実行（結果は window._lastRx に入る。画面表示は処方計算タブ側だが、今は使わない）
+    window._lastRx = null;
+    try {
+        calculatePrescription();
+    } catch (e) {
+        console.error('計算エラー:', e);
+        return null;
+    }
+    return window._lastRx;
+}
+
+// 「この内容で相談する」→ 必須チェック後、集めたデータを整理して表示
+function sdCollect() {
+    // ---- 必須チェック（その人に関係のある項目だけ） ----
+    const missing = [];
+    if (!sdV('sd_age')) missing.push('年齢');
+    if (!sdComplaint) missing.push('主訴');
+    // 乱視があるのに軸が空か判定する小さなヘルパー
+    const axisMissing = (cylId, axId) => sdV(cylId) && sdV(cylId) !== '0.00' && !sdV(axId);
+    // AR値（SPHは必須。乱視があれば軸も必須）
+    if (!sdV('sd_ar_r_sph')) missing.push('AR値（右）の度数');
+    else if (axisMissing('sd_ar_r_cyl','sd_ar_r_ax')) missing.push('AR値（右）の軸（乱視があります）');
+    if (!sdV('sd_ar_l_sph')) missing.push('AR値（左）の度数');
+    else if (axisMissing('sd_ar_l_cyl','sd_ar_l_ax')) missing.push('AR値（左）の軸（乱視があります）');
+    // 裸眼視力
+    if (!sdV('sd_va_naked_r') || !sdV('sd_va_naked_l') || !sdV('sd_va_naked_b')) missing.push('裸眼視力（右・左・両目）');
+    // KBあり/なしの選択自体が必須
+    if (sdChoices['sd_hasKB'] === undefined) {
+        missing.push('現用眼鏡（KB）のあり／なし');
+    } else if (sdChoices['sd_hasKB'] === true) {
+        // KBありなら KB度数・視力も必須
+        if (!sdV('sd_kb_r_sph')) missing.push('KB度数（右）');
+        else if (axisMissing('sd_kb_r_cyl','sd_kb_r_ax')) missing.push('KB度数（右）の軸（乱視があります）');
+        if (!sdV('sd_kb_l_sph')) missing.push('KB度数（左）');
+        else if (axisMissing('sd_kb_l_cyl','sd_kb_l_ax')) missing.push('KB度数（左）の軸（乱視があります）');
+        if (!sdV('sd_kb_years')) missing.push('KB使用年数');
+        if (!sdV('sd_va_kb_r') || !sdV('sd_va_kb_l') || !sdV('sd_va_kb_b')) missing.push('KB矯正視力（右・左・両目）');
+    }
+    // 完全矯正値（SPHは必須。乱視があれば軸も必須）
+    if (!sdV('sd_fc_r_sph')) missing.push('完全矯正値（右）の度数');
+    else if (axisMissing('sd_fc_r_cyl','sd_fc_r_ax')) missing.push('完全矯正値（右）の軸（乱視があります）');
+    if (!sdV('sd_fc_l_sph')) missing.push('完全矯正値（左）の度数');
+    else if (axisMissing('sd_fc_l_cyl','sd_fc_l_ax')) missing.push('完全矯正値（左）の軸（乱視があります）');
+    if (!sdV('sd_va_fc_r') || !sdV('sd_va_fc_l') || !sdV('sd_va_fc_b')) missing.push('完全矯正値の視力（右・左・両目）');
+
+    if (missing.length > 0) {
+        let warn = '<div class="soudan-result-card" style="background:var(--amber-light);border-color:#FCE4B6;">';
+        warn += '<div class="soudan-result-title" style="color:var(--amber);">入力が不足しています</div>';
+        warn += '<div style="font-size:13px;color:var(--text-secondary);line-height:1.8;margin-bottom:10px;">前回（KB）と今回（完全矯正値）を正しく比べるために、次の項目を入力してください。ここを確認しないと、精度の高い測定につながりません。</div>';
+        warn += '<ul style="margin-left:18px;font-size:13px;color:#334155;line-height:1.8;">';
+        missing.forEach(m => { warn += '<li>' + m + '</li>'; });
+        warn += '</ul></div>';
+        document.getElementById('sd_result').innerHTML = warn;
+        document.getElementById('sd_result').scrollIntoView({ behavior:'smooth', block:'start' });
+        return;
+    }
+
+    const complaintLabels = { distance:'遠くが見えにくい', near:'近くが見えにくい', tired:'疲れる', license:'免許更新', other:'その他' };
+    const age = sdV('sd_age');
+    let html = '<div class="soudan-result-card"><div class="soudan-result-title">入力内容の確認（第一段階）</div>';
+
+    html += '<table class="soudan-data-table">';
+    html += '<tr><td>年齢</td><td>' + (age || '—') + ' 歳</td></tr>';
+    html += '<tr><td>主訴</td><td>' + (sdComplaint ? complaintLabels[sdComplaint] : '—') + '</td></tr>';
+
+    // 深掘りの記録
+    const deepMap = {
+        'sd_drive':'運転', 'sd_far_want':'遠方の希望', 'sd_license_type':'免許種類',
+        'sd_pc':'パソコン', 'sd_license_type2':'免許種類', 'sd_license_level':'見え方の希望',
+        'sd_contact':'コンタクト'
+    };
+    for (const key in deepMap) {
+        if (sdChoices[key]) html += '<tr><td>' + deepMap[key] + '</td><td>' + sdChoices[key] + '</td></tr>';
+    }
+    if (sdV('sd_near_dist')) html += '<tr><td>手元距離</td><td>' + sdV('sd_near_dist') + '</td></tr>';
+    if (sdV('sd_tired_task')) html += '<tr><td>疲れる作業</td><td>' + sdV('sd_tired_task') + '</td></tr>';
+    if (sdV('sd_tired_env')) html += '<tr><td>使用環境</td><td>' + sdV('sd_tired_env') + '</td></tr>';
+
+    // KB
+    if (sdChoices['sd_hasKB']) {
+        html += '<tr><td>KB 右</td><td>S' + (sdV('sd_kb_r_sph')||'—') + ' C' + (sdV('sd_kb_r_cyl')||'—') + ' Ax' + (sdV('sd_kb_r_ax')||'—') + '</td></tr>';
+        html += '<tr><td>KB 左</td><td>S' + (sdV('sd_kb_l_sph')||'—') + ' C' + (sdV('sd_kb_l_cyl')||'—') + ' Ax' + (sdV('sd_kb_l_ax')||'—') + '</td></tr>';
+        if (sdV('sd_kb_add')) html += '<tr><td>KB 加入</td><td>' + sdV('sd_kb_add') + '</td></tr>';
+        html += '<tr><td>KB 使用年数</td><td>' + (sdV('sd_kb_years')||'—') + ' 年</td></tr>';
+    } else if (sdChoices['sd_hasKB'] === false) {
+        html += '<tr><td>KB</td><td>なし（初めて）</td></tr>';
+    }
+
+    // AR
+    html += '<tr><td>AR 右</td><td>S' + (sdV('sd_ar_r_sph')||'—') + ' C' + (sdV('sd_ar_r_cyl')||'—') + ' Ax' + (sdV('sd_ar_r_ax')||'—') + '</td></tr>';
+    html += '<tr><td>AR 左</td><td>S' + (sdV('sd_ar_l_sph')||'—') + ' C' + (sdV('sd_ar_l_cyl')||'—') + ' Ax' + (sdV('sd_ar_l_ax')||'—') + '</td></tr>';
+
+    // 完全矯正値
+    html += '<tr><td>完全矯正値 右</td><td>S' + (sdV('sd_fc_r_sph')||'—') + ' C' + (sdV('sd_fc_r_cyl')||'—') + ' Ax' + (sdV('sd_fc_r_ax')||'—') + '</td></tr>';
+    html += '<tr><td>完全矯正値 左</td><td>S' + (sdV('sd_fc_l_sph')||'—') + ' C' + (sdV('sd_fc_l_cyl')||'—') + ' Ax' + (sdV('sd_fc_l_ax')||'—') + '</td></tr>';
+    if (sdV('sd_fc_add')) html += '<tr><td>完全矯正値 加入</td><td>' + sdV('sd_fc_add') + '</td></tr>';
+
+    // 視力
+    html += '<tr><td>裸眼視力</td><td>右' + (sdV('sd_va_naked_r')||'—') + ' / 左' + (sdV('sd_va_naked_l')||'—') + ' / 両' + (sdV('sd_va_naked_b')||'—') + '</td></tr>';
+    html += '<tr><td>KB矯正視力</td><td>右' + (sdV('sd_va_kb_r')||'—') + ' / 左' + (sdV('sd_va_kb_l')||'—') + ' / 両' + (sdV('sd_va_kb_b')||'—') + '</td></tr>';
+    html += '<tr><td>完全矯正視力</td><td>右' + (sdV('sd_va_fc_r')||'—') + ' / 左' + (sdV('sd_va_fc_l')||'—') + ' / 両' + (sdV('sd_va_fc_b')||'—') + '</td></tr>';
+
+    html += '</table>';
+    html += '</div>';
+
+    // ---- 参考度数の計算（既存の計算を再利用） ----
+    const rx = sdRunCalculation();
+    if (rx) {
+        const fmt = (v) => (v >= 0 ? '+' : '') + Number(v).toFixed(2);
+        html += '<div class="soudan-result-card"><div class="soudan-result-title">参考度数（まずはKBと同じ用途の遠用）</div>';
+        html += '<table class="soudan-data-table">';
+        html += '<tr><th></th><th>SPH</th><th>CYL</th><th>AXIS</th>' + (rx.addPower > 0 ? '<th>ADD</th>' : '') + '</tr>';
+        html += '<tr><td>右眼</td><td>' + fmt(rx.right.sph) + '</td><td>' + fmt(rx.right.cyl) + '</td><td>' + rx.right.axis + '°</td>' + (rx.addPower > 0 ? '<td>+' + rx.addPower.toFixed(2) + '</td>' : '') + '</tr>';
+        html += '<tr><td>左眼</td><td>' + fmt(rx.left.sph) + '</td><td>' + fmt(rx.left.cyl) + '</td><td>' + rx.left.axis + '°</td>' + (rx.addPower > 0 ? '<td>+' + rx.addPower.toFixed(2) + '</td>' : '') + '</tr>';
+        html += '</table>';
+        // アドバイス（①〜⑥で作った注意メッセージ）
+        const adv = generateAdvice(rx);
+        if (adv && adv.length) {
+            html += '<div style="margin-top:12px;">';
+            adv.forEach(a => { html += '<div style="font-size:12px;color:#334155;line-height:1.7;margin-bottom:8px;padding:8px 12px;background:#fff;border-radius:8px;border:1px solid var(--border);">' + a + '</div>'; });
+            html += '</div>';
+        }
+        html += '<div style="margin-top:12px;padding:10px 13px;background:var(--amber-light);border:1px solid #FCE4B6;border-radius:10px;font-size:12px;color:var(--text-secondary);line-height:1.7;">この参考度数はスタート地点の目安です。本人が本当に視力アップを望んでいるか？を確認しながら進めてください。主訴が全ての根底です。</div>';
+        html += '</div>';
+        // 用途別のおススメ（遠近・中近）
+        html += sdBuildUsageOptions(rx);
+        // レンズ移行の階段（遠近→中近→近々）
+        html += sdBuildTransition(rx);
+    } else {
+        html += '<div class="soudan-result-card" style="background:var(--red-light);border-color:#FBCFE0;"><div style="font-size:13px;color:var(--red);">参考度数の計算でエラーが起きました。入力値を確認してください。</div></div>';
+    }
+
+    document.getElementById('sd_result').innerHTML = html;
+    document.getElementById('sd_result').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
 // ===========================
 // GLOBAL STATE
 // ===========================
 let chiefComplaints = [];
+
 let complaintsPriority = {};
 const maxComplaints = 3;
 let longPressInterval = null, longPressTimeout = null, isLongPressing = false;
@@ -989,7 +1792,8 @@ function switchTab(tab, btn) {
     else {
         const btns = document.querySelectorAll('.tab-btn');
         if (tab === 'calc') btns[0].classList.add('active');
-        else btns[1].classList.add('active');
+        else if (tab === 'practice') btns[1].classList.add('active');
+        else if (tab === 'soudan') btns[2].classList.add('active');
     }
 }
 
@@ -1137,7 +1941,7 @@ function fmtChange(v) {
 function getAdaptationLimit(age) {
     if (age <= 20) return 1.50; if (age <= 30) return 1.25;
     if (age <= 40) return 1.00; if (age <= 50) return 0.75;
-    if (age <= 60) return 0.75; return 1.00;
+    if (age <= 60) return 0.75; return 0.75;
 }
 function getAdjustmentPower(age) {
     if (age < 20) return 10; if (age < 25) return 8; if (age < 30) return 6;
@@ -1193,7 +1997,7 @@ function adjustAstigmatismPrescription(tCyl, tAxis, hasKB, kbCyl, kbAxis, usageY
     if (aa === 180) aa = 0;
     if (!hasKB) {
         const f = getAstigmatismFactor(ta);
-        ac = Math.round(tc * f * 0.8 * 4) / 4;
+        ac = Math.round(tc * f * 4) / 4;
         return { cyl: Math.max(ac, -6), axis: aa };
     }
     const cd = Math.abs(tc - kc);
@@ -1231,19 +2035,20 @@ function adjustAddPrescription(targetAdd, hasKB, kbAdd, usageYears, age) {
     const ka = parseFloat(kbAdd) || 0;
     let adj = ta;
     if (!hasKB) {
-        adj = getRecommendedAddPower(age);
+        // 初回：本人が入力した値を尊重（未入力なら呼び出し元で年齢推奨が入っている）
+        adj = ta > 0 ? ta : getRecommendedAddPower(age);
     } else {
         const d = ta - ka;
         let cf = usageYears >= 5 ? 0.8 : usageYears >= 3 ? 0.9 : 1.0;
         if      (Math.abs(d) <= 0.25) adj = ta;
-        else if (Math.abs(d) <= 0.50) adj = ka + d * cf;
-        else                          adj = ka + Math.sign(d) * 0.50;
+        else if (Math.abs(d) <= 0.75) adj = ka + d * cf;
+        else                          adj = ka + Math.sign(d) * 0.75;
     }
     return Math.max(0, Math.min(3, Math.round(adj * 4) / 4));
 }
 
 function checkAnisometropia(rv, lv, hasKB) {
-    return hasKB && Math.abs((parseFloat(rv)||1) - (parseFloat(lv)||1)) >= 0.3;
+    return hasKB && Math.abs((parseFloat(rv)||1) - (parseFloat(lv)||1)) >= 0.4;
 }
 
 function adjustBinocularBalance(rs, ls, rc, lc, age) {
@@ -1269,6 +2074,54 @@ function calculateNearPoint(sph, adj) {
     if (np === 0) return '∞';
     const cm = Math.abs(100 / np);
     return cm > 1000 ? '∞' : cm.toFixed(0) + 'cm';
+}
+
+// 距離を言葉にする（極端に近い/遠いは言葉で置き換え）
+function distanceLabel(diopter) {
+    // diopter: その点で必要な度数（正の値）。大きいほど近い。
+    if (diopter <= 0) return '∞（無限遠）';
+    const cm = 100 / diopter;
+    if (cm < 12) return '非常に近く';       // 極端に近い（若い人など）
+    if (cm > 1000) return '∞（無限遠）';
+    return Math.round(cm) + 'cm';
+}
+
+// 裸眼の明視域を計算して、表示用のオブジェクトを返す
+function calculateClearVision(nakedSE, adjPow) {
+    const se = Math.round(nakedSE * 100) / 100;  // 裸眼の等価球面値
+    const acc = parseFloat(adjPow) || 0;          // 年齢別の調節力
+
+    if (se < 0) {
+        // 近視：遠点＝100/|SE|、近点＝100/(|SE|＋調節力)
+        const myopia = Math.abs(se);
+        const farDiopter = myopia;               // 遠点で必要な度数
+        const nearDiopter = myopia + acc;        // 近点で必要な度数
+        return {
+            type: 'myopia',
+            text: `裸眼の明視域（はっきり見える範囲）：${distanceLabel(farDiopter)} 〜 ${distanceLabel(nearDiopter)}`
+        };
+    } else if (se === 0) {
+        // 正視：遠点＝無限遠、近点＝100/調節力
+        return {
+            type: 'emmetropia',
+            text: `裸眼の明視域（はっきり見える範囲）：∞（無限遠） 〜 ${distanceLabel(acc)}`
+        };
+    } else {
+        // 遠視：残りの調節力（調節力−遠視）で3段階のニュアンス
+        const remain = acc - se;
+        let note;
+        if (remain >= 2.5) {
+            note = '調節力で補って、遠くも近くも見えています。';
+        } else if (remain > 0) {
+            note = '遠くは見えますが、近方が見えにくくなってきています。';
+        } else {
+            note = '裸眼では遠くも近くもぼやけやすい状態です。';
+        }
+        return {
+            type: 'hyperopia',
+            text: `裸眼の見え方（遠視）：${note}`
+        };
+    }
 }
 
 function calculatePrescription() {
@@ -1313,6 +2166,32 @@ function calculatePrescription() {
         age, chiefComplaints, hasKB, isAnisometropia: isAniso
     };
 
+    // 下方視サイン判定：実際のADDが年齢推奨より +0.50D 以上大きいか
+    const actualAdd = Math.max(arAdd, alAdd);
+    rx.addExceedsAge = (age >= 40) && (actualAdd - addPow >= 0.50);
+    // 初回で強いADD（+2.25以上）の注意
+    rx.firstTimeStrongAdd = (!hasKB) && (actualAdd >= 2.25);
+
+    // 乱視あり判定（カウンセリングメッセージ用）
+    rx.hasAstigmatism = (rRx.cyl < 0 || lRx.cyl < 0);
+
+    // 調整幅バー：初回・遠方視力低下(主訴A=遠方)のとき、目安〜完全矯正値の幅を持たせる
+    // 目安 = 調整後SPH(ars/als)、完全矯正値 = rs/ls。差が0.50D超のときだけ幅を出す
+    const isFirstDistance = (!hasKB) && (mainC === 1);
+    rx.adjustBar = null;
+    if (isFirstDistance) {
+        const rGuide = bal.rightSph, rFull = Math.round(rs * 4) / 4;
+        const lGuide = bal.leftSph,  lFull = Math.round(ls * 4) / 4;
+        const rShow = Math.abs(rFull - rGuide) > 0.50;
+        const lShow = Math.abs(lFull - lGuide) > 0.50;
+        if (rShow || lShow) {
+            rx.adjustBar = {
+                right: rShow ? { guide: rGuide, full: rFull } : null,
+                left:  lShow ? { guide: lGuide, full: lFull } : null
+            };
+        }
+    }
+
     if (hasKB) {
         rx.changes = {
             right: { sph: rRx.sph-(parseFloat(ev('kbRightSph'))||0), cyl: rRx.cyl-(parseFloat(ev('kbRightCyl'))||0), add: rRx.add-(parseFloat(ev('kbRightAdd'))||0) },
@@ -1320,9 +2199,12 @@ function calculatePrescription() {
         };
     }
     rx.refHint = getRefractiveHint();
-    const avSE = (rRx.sph + rRx.cyl/2 + lRx.sph + lRx.cyl/2) / 2;
-    rx.nearPoint = calculateNearPoint(avSE, adjPow);
+    // 裸眼の明視域（完全矯正値＝裸眼の屈折を使う）
+    const nakedRSE = rs + rc/2, nakedLSE = ls + lc/2;
+    const nakedSE = (nakedRSE + nakedLSE) / 2;
+    rx.clearVision = calculateClearVision(nakedSE, adjPow);
 
+    window._lastRx = rx;   // 症例相談モードから結果を受け取れるように保管
     displayResults(rx);
 }
 
@@ -1359,8 +2241,14 @@ function displayResults(rx) {
             </div>
         </div>
         ${rx.addPower > 0 ? `<div class="add-banner"><span class="add-banner-label">推奨 ADD (${rx.age}歳)</span><span class="add-banner-val">+${rx.addPower.toFixed(2)} D</span></div>` : ''}
-        <div style="font-size:12px;color:var(--text-secondary);">明視域（推定近点）: <strong>${rx.nearPoint}</strong></div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
+            ${rx.clearVision.text}
+            <span style="display:block;color:var(--text-muted);font-size:11px;margin-top:4px;">※年齢の平均的な調節力から出した目安です。人によってブレがあります。</span>
+        </div>
     </div>`;
+
+    // 調整幅バー（初回・遠方視力低下のとき）
+    html += renderAdjustBar(rx);
 
     // KB変化量
     if (rx.changes) {
@@ -1373,6 +2261,9 @@ function displayResults(rx) {
                     <tr><td>左眼</td><td>${fmtChange(rx.changes.left.sph)}</td><td>${fmtChange(rx.changes.left.cyl)}</td><td>${fmtChange(rx.changes.left.add)}</td></tr>
                 </tbody>
             </table>
+            <div style="margin-top:12px;padding:11px 14px;background:var(--amber-light);border:1px solid #FCE4B6;border-radius:10px;font-size:12px;color:var(--text-secondary);line-height:1.6;">
+                この変化量は<b style="color:var(--amber);">目安</b>です。実際にどこまで変えるかは、本人の主訴・希望を確認する<b style="color:var(--amber);">カウンセリングが最重要</b>です。数字はスタート地点として、見え方を確かめながら調整してください。
+            </div>
         </div>`;
     }
 
@@ -1418,6 +2309,41 @@ function displayResults(rx) {
     col.innerHTML = html;
 }
 
+function renderAdjustBar(rx) {
+    if (!rx.adjustBar) return '';
+    // 片眼分のバーHTMLを作る
+    function eyeBar(label, data) {
+        if (!data) return '';
+        const guide = data.guide, full = data.full;
+        // 目安を左端、完全矯正値を右端に置く（近視：弱い→強い）
+        // バー上の位置は 目安=10%, 完全矯正値=90% に固定して見やすく
+        const gPos = 10, fPos = 90;
+        return `
+        <div class="adjust-bar-eye">
+            <div class="adjust-bar-eye-label">${label}</div>
+            <div class="adjust-bar-track">
+                <div class="adjust-bar-label guide" style="left:${gPos}%;">目安 ${fmtSph(guide)}</div>
+                <div class="adjust-bar-dot" style="left:${gPos}%;"></div>
+                <div class="adjust-bar-label full" style="left:${fPos}%;">完全矯正値 ${fmtSph(full)}</div>
+                <div class="adjust-bar-dot full" style="left:${fPos}%;"></div>
+            </div>
+            <div class="adjust-bar-ends"><span>弱め ←</span><span>→ しっかり見える</span></div>
+        </div>`;
+    }
+    const rHtml = eyeBar('右眼 OD', rx.adjustBar.right);
+    const lHtml = eyeBar('左眼 OS', rx.adjustBar.left);
+    return `
+    <div class="adjust-bar-card">
+        <div class="adjust-bar-title">度数調整の目安と幅</div>
+        <div class="adjust-bar-sub">「目安」は出発点です。実際の見え方を確認しながら、本人の希望に合わせて調整してください。</div>
+        ${rHtml}${lHtml}
+        <div class="adjust-bar-note">
+            <div class="adjust-bar-note-item"><b>しっかり見たいなら</b><br>完全矯正値まで上げて様子を見ます。</div>
+            <div class="adjust-bar-note-item"><b>弱めるなら</b><br>本人の生活・用途に合わせてカウンセリング（運転を残すか等）で決めます。</div>
+        </div>
+    </div>`;
+}
+
 function generateLensRecommendations(rx) {
     const lenses = [{ type:'遠用単焦点', rightSph:rx.right.sph, leftSph:rx.left.sph, rightCyl:rx.right.cyl, leftCyl:rx.left.cyl, rightAxis:rx.right.axis, leftAxis:rx.left.axis, add:0, distance:'運転・スポーツ', note:'遠方視力重視' }];
     if (rx.age >= 40 && rx.addPower > 0) {
@@ -1430,12 +2356,21 @@ function generateLensRecommendations(rx) {
 function generateAdvice(rx) {
     const advice = [];
     if (rx.addPower > 0) advice.push(`【加入度数対応】${rx.age}歳の推奨ADD（+${rx.addPower.toFixed(2)}D）を適用しました。1〜2年毎の定期調整が必要です。`);
+    if (rx.addExceedsAge) {
+        advice.push('【下方視の確認】年齢の推奨ADDより実際のADDが大きくなっています。下方視（目線を下げて近くを見る動作）が苦手な可能性があります。累進帯長をショートにすることを検討してください。また、遠方視力を少し譲れる場合は、S面（球面度数）側の調整でADDを抑えることも検討できます。');
+    }
+    if (rx.firstTimeStrongAdd) {
+        advice.push('【初回・強い加入度数】初めての累進レンズで加入度数が+2.25D以上になっています。強い加入は慣れにくいことがあるため、本人が便利さを実感できるか確認しながら進めてください。');
+    }
     if (!rx.hasKB) advice.push('初回処方のため、乱視軸方向別処方法則に基づいて保守的な度数調整を行っています。');
+    if (rx.hasAstigmatism) {
+        advice.push('【乱視の調整】表示している乱視度数は目安（スタート地点）です。乱視は初めてだと傾いて見える・歩きにくい等の違和感が出やすいため、本人の慣れ具合を確認しながら調整してください。数字より本人の主訴カウンセリングを優先します。');
+    }
     const rType = getAstigmatismType(rx.right.axis), lType = getAstigmatismType(rx.left.axis);
     if (rType === 'direct' || lType === 'direct') advice.push('直乱視（180度方向）があります。違和感を最小限に抑えた保守的な処方です。');
     if (rType === 'inverse' || lType === 'inverse') advice.push('倒乱視（90度方向）があります。目を細めても見えにくいため適切な乱視処方を行っています。');
     if (rType === 'oblique' || lType === 'oblique') advice.push('斜乱視があります。平衡感覚への影響を考慮し、軸度変更は避けた処方です。');
-    if (rx.isAnisometropia) advice.push('不同視があるため、現用眼鏡度数を基準に処方しています。');
+    if (rx.isAnisometropia) advice.push('【不同視の可能性】左右の視力差が大きく、不同視の可能性があります。現用眼鏡の度数を基準にしています。左右差による見え方の負担（像の大きさの違い・両眼視の疲れ）を考えながら、本人の反応を確認して処方してください。数字はあくまで目安です。');
     if (advice.length === 0) advice.push('実践的な眼鏡処方法則に基づく適切な処方です。良好な視力が期待できます。');
     return advice;
 }
@@ -1751,6 +2686,7 @@ function showQuizEnd() {
 document.addEventListener('DOMContentLoaded', () => {
     setupLongPress();
     setupComplaints();
+    sdInitSelects();
 });
 </script>
 </body>
