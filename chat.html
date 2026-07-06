@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>症例相談チャット（カラスイ式）</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Sans:wght@500;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #F7F9FC; --card: #FFFFFF; --border: #EAF0F6; --border-strong: #DCE6F1;
+    --text-primary: #0B1B33; --text-secondary: #5A6B85; --text-muted: #93A2B8;
+    --blue: #1E6FEB; --blue-grad: linear-gradient(135deg, #2E7BFF, #1E6FEB); --blue-light: #F0F6FF;
+    --purple: #7C3AED; --purple-grad: linear-gradient(135deg,#A78BFA,#7C3AED); --purple-light: #F5F3FF;
+    --amber: #D97706; --amber-light: #FFFBEB;
+    --shadow-sm: 0 2px 8px rgba(15,40,80,.05); --shadow-blue: 0 6px 16px rgba(30,111,235,.28);
+    --font-num: 'DM Sans', 'Inter', sans-serif;
+  }
+  html, body { height: 100%; background: var(--bg); font-family: 'Inter', -apple-system, sans-serif; color: var(--text-primary); }
+  .app { display: flex; flex-direction: column; height: 100vh; max-width: 640px; margin: 0 auto; }
+  .header {
+    display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+    background: rgba(255,255,255,.9); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+  .header-icon {
+    width: 38px; height: 38px; background: var(--purple-grad); border-radius: 11px;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+    box-shadow: 0 6px 16px rgba(124,58,237,.28); flex-shrink: 0;
+  }
+  .header-title { font-size: 15px; font-weight: 700; }
+  .header-sub { font-size: 11px; color: var(--text-muted); }
+  .header-back { margin-left: auto; font-size: 12px; color: var(--text-secondary); background: none; border: 1px solid var(--border-strong); border-radius: 9px; padding: 6px 10px; cursor: pointer; }
+
+  .log { flex: 1; overflow-y: auto; padding: 18px 16px; display: flex; flex-direction: column; gap: 14px; }
+  .msg { display: flex; gap: 9px; align-items: flex-end; }
+  .msg.ai { justify-content: flex-start; }
+  .msg.user { justify-content: flex-end; }
+  .msg .icon {
+    width: 28px; height: 28px; border-radius: 9px; background: var(--purple-grad);
+    display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0;
+  }
+  .bubble { max-width: 82%; padding: 12px 15px; border-radius: 15px; font-size: 14px; line-height: 1.85; white-space: pre-wrap; }
+  .msg.ai .bubble { background: var(--purple-light); border: 1px solid #E9D5FF; border-bottom-left-radius: 4px; }
+  .msg.user .bubble { background: #fff; border: 1px solid var(--border-strong); border-bottom-right-radius: 4px; }
+
+  .choice-wrap { display: flex; flex-direction: column; gap: 8px; margin-left: 37px; margin-top: -4px; }
+  .choice-btn {
+    text-align: left; padding: 12px 16px; border-radius: 13px; border: 1.5px solid var(--border-strong);
+    background: #fff; font-size: 13.5px; color: var(--text-primary); cursor: pointer;
+    transition: all .15s; line-height: 1.6;
+  }
+  .choice-btn:hover { border-color: var(--purple); background: var(--purple-light); transform: translateY(-1px); }
+
+  .restart-wrap { margin-left: 37px; margin-top: 4px; }
+  .restart-btn {
+    padding: 10px 18px; border-radius: 12px; border: none; background: var(--purple-grad);
+    color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 6px 16px rgba(124,58,237,.28);
+  }
+
+  .footer-note { text-align: center; font-size: 10px; color: var(--text-muted); padding: 8px 20px 12px; line-height: 1.6; background: rgba(255,255,255,.92); flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <div class="header-icon">👓</div>
+    <div>
+      <div class="header-title">症例相談チャット（カラスイ式）</div>
+      <div class="header-sub">選択肢を選んで、気軽に相談できます</div>
+    </div>
+  </div>
+  <div class="log" id="log"></div>
+  <div class="footer-note">これは、カラスイの考え方をもとにした自動応答です。具体的な度数は「高精度フォーム」で確認できます。最終判断は、装用テストと本人の希望を確認しながら行ってください。</div>
+</div>
+
+<script>
+const logEl = document.getElementById('log');
+let state = {};
+
+function renderAiMessage(text) {
+    const wrap = document.createElement('div');
+    wrap.className = 'msg ai';
+    wrap.innerHTML = '<div class="icon">👓</div><div class="bubble">' + text.replace(/\n/g,'<br>') + '</div>';
+    logEl.appendChild(wrap);
+    scrollDown();
+}
+function renderUserMessage(text) {
+    const wrap = document.createElement('div');
+    wrap.className = 'msg user';
+    wrap.innerHTML = '<div class="bubble">' + text + '</div>';
+    logEl.appendChild(wrap);
+    scrollDown();
+}
+function renderChoices(choices, onPick) {
+    const wrap = document.createElement('div');
+    wrap.className = 'choice-wrap';
+    wrap.id = 'currentChoices';
+    choices.forEach(c => {
+        const btn = document.createElement('div');
+        btn.className = 'choice-btn';
+        btn.textContent = c.label;
+        btn.onclick = () => {
+            document.getElementById('currentChoices').remove();
+            renderUserMessage(c.label);
+            onPick(c.value);
+        };
+        wrap.appendChild(btn);
+    });
+    logEl.appendChild(wrap);
+    scrollDown();
+}
+function renderRestart() {
+    const wrap = document.createElement('div');
+    wrap.className = 'restart-wrap';
+    wrap.innerHTML = '<button class="restart-btn" onclick="location.reload()">別の患者さんを相談する</button>';
+    logEl.appendChild(wrap);
+    scrollDown();
+}
+function scrollDown() { setTimeout(() => { logEl.scrollTop = logEl.scrollHeight; }, 50); }
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ===========================
+// 会話フロー
+// ===========================
+async function start() {
+    renderAiMessage('こんにちは。カラスイの考え方をもとにした、症例相談チャットです。患者さんのことを、選択肢から教えてくださいね。まず、いちばん困っていること（主訴）は何ですか？');
+    await delay(300);
+    renderChoices([
+        { label: '遠くが見えにくい', value: 'distance' },
+        { label: '近くが見えにくい', value: 'near' },
+        { label: '見えるけど疲れる', value: 'tired' },
+        { label: '免許更新のため', value: 'license' },
+    ], askAge);
+}
+
+async function askAge(complaint) {
+    state.complaint = complaint;
+    await delay(300);
+    renderAiMessage('いい感じですね。年齢はどれくらいですか？');
+    await delay(300);
+    renderChoices([
+        { label: '〜39歳', value: 'y30' },
+        { label: '40〜49歳', value: 'y40' },
+        { label: '50〜59歳', value: 'y50' },
+        { label: '60歳以上', value: 'y60' },
+    ], askKB);
+}
+
+async function askKB(age) {
+    state.age = age;
+    await delay(300);
+    renderAiMessage('ありがとうございます。今の眼鏡（KB）はお持ちですか？');
+    await delay(300);
+    renderChoices([
+        { label: 'はい、あります', value: true },
+        { label: 'いえ、初めてです', value: false },
+    ], (hasKB) => { state.hasKB = hasKB; if (hasKB) askUsageYears(); else askWant(); });
+}
+
+async function askUsageYears(_) {
+    await delay(300);
+    renderAiMessage('今のKB、何年くらい使っていますか？使用年数は、度数をどれくらい変えていいかの目安になるので大切です。');
+    await delay(300);
+    renderChoices([
+        { label: '1年未満', value: 'u0' },
+        { label: '1〜2年', value: 'u1' },
+        { label: '3〜4年', value: 'u3' },
+        { label: '5年以上', value: 'u5' },
+    ], (years) => { state.usageYears = years; askKBIssue(); });
+}
+
+async function askKBIssue(_) {
+    await delay(300);
+    renderAiMessage('今のKBで、困っていること・改善したいことはありますか？');
+    await delay(300);
+    const issueByComplaint = {
+        distance: [
+            { label: '遠くがぼやける', value: 'blur_far' },
+            { label: '運転で標識が見えにくい', value: 'drive' },
+            { label: '特に困っていない（新調したいだけ）', value: 'none' },
+        ],
+        near: [
+            { label: '手元の文字が見えにくい', value: 'blur_near' },
+            { label: 'パソコンが見えにくい', value: 'blur_pc' },
+            { label: '特に困っていない（新調したいだけ）', value: 'none' },
+        ],
+        tired: [
+            { label: '長時間のPC作業で疲れる', value: 'pc_tired' },
+            { label: '読書ですぐ疲れる', value: 'read_tired' },
+            { label: '特に困っていない（新調したいだけ）', value: 'none' },
+        ],
+        license: [
+            { label: '今のKBで視力が足りるか不安', value: 'unsure' },
+            { label: '特に困っていない（更新のため確認）', value: 'none' },
+        ]
+    };
+    renderChoices(issueByComplaint[state.complaint] || issueByComplaint.distance, (issue) => { state.kbIssue = issue; askWant(); });
+}
+
+async function askWant(_) {
+    await delay(300);
+    renderAiMessage('今回の眼鏡、どうしたいですか？本人の希望が、処方でいちばん大切なところです。');
+    await delay(300);
+    renderChoices([
+        { label: 'しっかり視力を上げたい', value: 'strong' },
+        { label: '慣れやすさ重視で、少しでよい', value: 'gentle' },
+        { label: 'まだよくわからない', value: 'unsure' },
+    ], (want) => { state.want = want; showResult(); });
+}
+
+// ===========================
+// 結果（方針・考え方のコメント、度数は出さない）
+// ===========================
+async function showResult() {
+    await delay(400);
+    renderAiMessage('教えてくれてありがとうございます。ここまでの内容だと、こんな考え方で進めるのがいいと思います。');
+    await delay(500);
+
+    // ---- 1個目の吹き出し：主訴に対する基本方針＋KB・使用年数の話 ----
+    const block1 = [];
+    if (state.complaint === 'distance' || state.complaint === 'license') {
+        block1.push('遠くの見え方が主訴なので、まずS面（球面度数）を段階的に上げて、装用テストで見え方を確認していく進め方になります。');
+        if (state.kbIssue === 'drive' || state.complaint === 'license') {
+            block1.push('運転や免許更新が関わる場合は、必要な視力（普通免許0.7・大型免許0.8）を意識しながら、どこまでしっかり見たいかを確認するのが大切です。');
+        }
+    } else if (state.complaint === 'near') {
+        block1.push('近くの見え方が主訴なので、年齢に応じた加入度数（老視の度合い）を目安にしつつ、遠近・中近・近々のどれが生活に合うかを一緒に考えるのがよさそうです。');
+        if (state.kbIssue === 'blur_pc') {
+            block1.push('パソコンが見えにくいとのことなので、加入度数を上げるだけでなく、中近両用への移行も選択肢になります。');
+        }
+    } else if (state.complaint === 'tired') {
+        block1.push('疲れやすさが主訴の場合、乱視やS面のバランスがずれていることもあります。乱視は補助的に考えて、まずS面で距離感を合わせるのが基本です。');
+    }
+
+    if (state.hasKB) {
+        const yearsLabel = { u0: '1年未満', u1: '1〜2年', u3: '3〜4年', u5: '5年以上' }[state.usageYears];
+        block1.push('今のKBを' + yearsLabel + '使われているとのことなので、そこからの変化は3段階以内を目安にして、様子を見ながら進めるのが安心です。');
+        if (state.want === 'strong') {
+            block1.push('しっかり視力を上げたいというご希望なら、3段階を超える変化も検討できますが、本人が本当にそれを望んでいるかを、もう一度確認するのが大切です。');
+        } else if (state.want === 'gentle') {
+            block1.push('慣れやすさ重視とのことなので、変化は控えめにして、KBに近い度数から始めるのがいいと思います。');
+        }
+    } else {
+        block1.push('初めての眼鏡なので、完全矯正値の8割程度からスタートして、様子を見ながら調整していく進め方になります。');
+    }
+
+    renderAiMessage(block1.join('\n\n'));
+    await delay(700);
+
+    // ---- 2個目の吹き出し：年齢による加入度数の話＋締めの言葉 ----
+    const block2 = [];
+    if (state.age !== 'y30') {
+        block2.push('年齢的に、加入度数（近くを見るための度数）も関わってきます。正確な数値は、高精度フォームで年齢を入力すると自動で目安が出ます。');
+    }
+    block2.push('この内容は、あくまで方針の目安です。主訴が全ての根底なので、本人が本当にどうしたいかを確認しながら、決めていくのが大切ですね。');
+    block2.push('正確な参考度数が知りたい場合は「高精度フォーム」に、同じ内容を入力してみてください。');
+
+    renderAiMessage(block2.join('\n\n'));
+    await delay(500);
+
+    await delay(300);
+    renderRestart();
+}
+
+start();
+</script>
+</body>
+</html>
