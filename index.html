@@ -599,6 +599,49 @@
         }
         .soudan-intro h2 { font-size: 16px; font-weight: 700; color: var(--blue); margin-bottom: 6px; }
         .soudan-intro p { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+
+        /* ===== 症例相談の入り口選択 ===== */
+        .soudan-entry-wrap { max-width: 640px; margin: 0 auto; }
+        .soudan-entry-cards { display: flex; flex-direction: column; gap: 14px; margin-top: 18px; }
+        .soudan-entry-card {
+            background: #fff; border: 1.5px solid var(--border-strong);
+            border-radius: var(--radius); padding: 20px; cursor: pointer;
+            transition: all .18s; text-align: left;
+        }
+        .soudan-entry-card:hover { border-color: var(--blue); box-shadow: var(--shadow-sm); transform: translateY(-1px); }
+        .soudan-entry-icon {
+            width: 40px; height: 40px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 19px; margin-bottom: 12px;
+        }
+        .soudan-entry-card.form .soudan-entry-icon { background: var(--blue-grad); box-shadow: var(--shadow-blue); }
+        .soudan-entry-card.ai .soudan-entry-icon { background: linear-gradient(135deg,#A78BFA,#7C3AED); box-shadow: 0 6px 16px rgba(124,58,237,.28); }
+        .soudan-entry-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+        .soudan-entry-desc { font-size: 12.5px; color: var(--text-secondary); line-height: 1.7; }
+        .soudan-entry-tag {
+            display: inline-block; font-size: 10px; font-weight: 700;
+            padding: 3px 9px; border-radius: 20px; margin-top: 10px;
+        }
+        .soudan-entry-card.form .soudan-entry-tag { background: var(--blue-light); color: var(--blue); }
+        .soudan-entry-card.ai .soudan-entry-tag { background: var(--purple-light); color: var(--purple); }
+
+        /* AIチャット案内モーダル */
+        .ai-modal-overlay {
+            position: fixed; inset: 0; background: rgba(11,27,51,.45);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 999; padding: 20px;
+        }
+        .ai-modal-overlay.hidden { display: none; }
+        .ai-modal-box {
+            background: #fff; border-radius: var(--radius); padding: 24px;
+            max-width: 380px; width: 100%; box-shadow: var(--shadow-lg);
+        }
+        .ai-modal-title { font-size: 15px; font-weight: 700; margin-bottom: 10px; color: var(--purple); }
+        .ai-modal-text { font-size: 13px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 18px; }
+        .ai-modal-btns { display: flex; gap: 10px; }
+        .ai-modal-btns button { flex: 1; padding: 11px; border-radius: 11px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; }
+        .ai-modal-cancel { background: var(--bg); color: var(--text-secondary); }
+        .ai-modal-open { background: linear-gradient(135deg,#A78BFA,#7C3AED); color: #fff; }
         .soudan-section-label {
             font-size: 11px; font-weight: 700; color: var(--blue);
             text-transform: uppercase; letter-spacing: .08em;
@@ -1134,7 +1177,43 @@
 
 <!-- ========== PAGE: 症例相談 ========== -->
 <div id="page-soudan" class="page-content">
-    <div class="soudan-wrap">
+    <!-- 入り口選択画面 -->
+    <div id="soudan-entry" class="soudan-entry-wrap">
+        <div class="soudan-intro">
+            <h2>症例相談モード</h2>
+            <p>患者さんのことを相談できます。しっかりデータを入れて正確な参考度数を出す「高精度フォーム」と、気軽に自由な文章で相談できる「AIチャット」、どちらかを選んでください。</p>
+        </div>
+        <div class="soudan-entry-cards">
+            <div class="soudan-entry-card form" onclick="sdShowForm()">
+                <div class="soudan-entry-icon">📋</div>
+                <div class="soudan-entry-title">高精度フォーム</div>
+                <div class="soudan-entry-desc">年齢・主訴・KB・完全矯正値などを入力して、正確な参考度数と用途別のおススメを確認できます。</div>
+                <div class="soudan-entry-tag">しっかり相談したい方に</div>
+            </div>
+            <div class="soudan-entry-card ai" onclick="sdShowAiModal()">
+                <div class="soudan-entry-icon">💬</div>
+                <div class="soudan-entry-title">AIチャット（カラスイ式）</div>
+                <div class="soudan-entry-desc">自由な文章で、患者さんのことを気軽に相談できます。カラスイの考え方を学んだAIが答えます。</div>
+                <div class="soudan-entry-tag">気軽に相談したい方に</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AIチャット案内モーダル -->
+    <div id="ai-modal" class="ai-modal-overlay hidden">
+        <div class="ai-modal-box">
+            <div class="ai-modal-title">AIチャットについて</div>
+            <div class="ai-modal-text">これは、カラスイの考え方を学んだAIとの相談チャットです。自由に文章を書いて、気軽に相談できます。ここから先は、別のページ（Claude）に移ります。使うには無料のアカウントが必要です。</div>
+            <div class="ai-modal-btns">
+                <button class="ai-modal-cancel" onclick="sdHideAiModal()">やめる</button>
+                <button class="ai-modal-open" onclick="sdOpenAiChat()">AIチャットを開く</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 高精度フォーム本体 -->
+    <div id="soudan-form" class="soudan-wrap hidden">
+        <button class="btn btn-ghost" style="margin-bottom:16px;" onclick="sdBackToEntry()">← 戻る</button>
         <div class="soudan-intro">
             <h2>症例相談モード（高精度フォーム）</h2>
             <p>患者さんのデータを入力すると、主訴をベースにした参考度数の相談ができます。わかる範囲で大丈夫です。データが揃うほど精度が上がります。</p>
@@ -1353,6 +1432,30 @@
 // ===========================
 // 症例相談モード（第一段階：データ収集）
 // ===========================
+// ===========================
+// 症例相談：入り口の切り替え（高精度フォーム / AIチャット）
+// ===========================
+function sdShowForm() {
+    document.getElementById('soudan-entry').classList.add('hidden');
+    document.getElementById('soudan-form').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function sdBackToEntry() {
+    document.getElementById('soudan-form').classList.add('hidden');
+    document.getElementById('soudan-entry').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function sdShowAiModal() {
+    document.getElementById('ai-modal').classList.remove('hidden');
+}
+function sdHideAiModal() {
+    document.getElementById('ai-modal').classList.add('hidden');
+}
+function sdOpenAiChat() {
+    window.open('https://claude.ai/public/artifacts/103f0f95-71d1-480b-86ce-427fe91e3363', '_blank');
+    sdHideAiModal();
+}
+
 let sdComplaint = null;          // 選ばれた主訴
 let sdChoices = {};              // チップ選択の記録
 
