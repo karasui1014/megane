@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>眼鏡処方計算ツール</title>
+    <link rel="icon" type="image/png" href="favicon-32.png">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
     <style>
@@ -1231,6 +1234,7 @@
                 <div class="soudan-chips" id="sd_complaint_chips">
                     <div class="soudan-chip" onclick="sdSelectComplaint('distance', this)">遠くが見えにくい</div>
                     <div class="soudan-chip" onclick="sdSelectComplaint('near', this)">近くが見えにくい</div>
+                    <div class="soudan-chip" onclick="sdSelectComplaint('both', this)">両方（遠くも近くも見えにくい）</div>
                     <div class="soudan-chip" onclick="sdSelectComplaint('tired', this)">疲れる</div>
                     <div class="soudan-chip" onclick="sdSelectComplaint('license', this)">免許更新</div>
                     <div class="soudan-chip" onclick="sdSelectComplaint('other', this)">その他</div>
@@ -1468,8 +1472,11 @@ function sdSelectComplaint(type, el) {
     ['distance','near','tired','license'].forEach(t => {
         document.getElementById('sd_deep_' + t).classList.add('hidden');
     });
-    // 選ばれた主訴の深掘りだけ出す
-    if (document.getElementById('sd_deep_' + type)) {
+    // 選ばれた主訴の深掘りだけ出す（「両方」は遠く・近くの両方を表示）
+    if (type === 'both') {
+        document.getElementById('sd_deep_distance').classList.remove('hidden');
+        document.getElementById('sd_deep_near').classList.remove('hidden');
+    } else if (document.getElementById('sd_deep_' + type)) {
         document.getElementById('sd_deep_' + type).classList.remove('hidden');
     }
     // 共通の確認は常に出す
@@ -1710,7 +1717,7 @@ function sdSet(id, val) { const e = document.getElementById(id); if (e) e.value 
 // 症例相談フォームのデータを処方計算の欄にコピーして計算を実行し、結果rxを返す
 function sdRunCalculation() {
     // 主訴の対応：遠方/免許更新→1(遠方視力低下)、近く→2(近方視力低下)、疲れる→3(眼精疲労)
-    const complaintMap = { distance:1, license:1, near:2, tired:3, other:1 };
+    const complaintMap = { distance:1, license:1, both:1, near:2, tired:3, other:1 };
     chiefComplaints = [ complaintMap[sdComplaint] || 1 ];
 
     // 年齢
