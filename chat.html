@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>症例相談チャット（カラスイ式）</title>
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Sans:wght@500;700&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -130,6 +133,7 @@ async function start() {
     renderChoices([
         { label: '遠くが見えにくい', value: 'distance' },
         { label: '近くが見えにくい', value: 'near' },
+        { label: '両方（遠くも近くも見えにくい）', value: 'both' },
         { label: '見えるけど疲れる', value: 'tired' },
         { label: '免許更新のため', value: 'license' },
     ], askAge);
@@ -186,6 +190,11 @@ async function askKBIssue(_) {
             { label: 'パソコンが見えにくい', value: 'blur_pc' },
             { label: '特に困っていない（新調したいだけ）', value: 'none' },
         ],
+        both: [
+            { label: '遠くも手元もぼやける', value: 'blur_both' },
+            { label: '運転もパソコンも見えにくい', value: 'both_drive_pc' },
+            { label: '特に困っていない（新調したいだけ）', value: 'none' },
+        ],
         tired: [
             { label: '長時間のPC作業で疲れる', value: 'pc_tired' },
             { label: '読書ですぐ疲れる', value: 'read_tired' },
@@ -229,6 +238,11 @@ async function showResult() {
         block1.push('近くの見え方が主訴なので、年齢に応じた加入度数（老視の度合い）を目安にしつつ、遠近・中近・近々のどれが生活に合うかを一緒に考えるのがよさそうです。');
         if (state.kbIssue === 'blur_pc') {
             block1.push('パソコンが見えにくいとのことなので、加入度数を上げるだけでなく、中近両用への移行も選択肢になります。');
+        }
+    } else if (state.complaint === 'both') {
+        block1.push('遠くも近くも見えにくいとのことなので、まずS面（球面度数）で遠くの見え方を整えつつ、年齢に応じた加入度数で近くもカバーする、遠近両用のような考え方が土台になります。');
+        if (state.kbIssue === 'both_drive_pc') {
+            block1.push('運転もパソコンも見えにくいとのことなので、遠くと中間（パソコン）のどちらを優先したいか、本人の生活に合わせて確認するのが大切です。');
         }
     } else if (state.complaint === 'tired') {
         block1.push('疲れやすさが主訴の場合、乱視やS面のバランスがずれていることもあります。乱視は補助的に考えて、まずS面で距離感を合わせるのが基本です。');
