@@ -1203,7 +1203,7 @@
     <div id="ai-modal" class="ai-modal-overlay hidden">
         <div class="ai-modal-box">
             <div class="ai-modal-title">AIチャットについて</div>
-            <div class="ai-modal-text">これは、カラスイの考え方を学んだAIとの相談チャットです。自由に文章を書いて、気軽に相談できます。ここから先は、別のページ（Claude）に移ります。使うには無料のアカウントが必要です。</div>
+            <div class="ai-modal-text">これは、カラスイの考え方をもとにした、選択肢で進む症例相談チャットです。アカウントなしで、誰でもすぐに使えます。ここから先は、別のページに移ります。</div>
             <div class="ai-modal-btns">
                 <button class="ai-modal-cancel" onclick="sdHideAiModal()">やめる</button>
                 <button class="ai-modal-open" onclick="sdOpenAiChat()">AIチャットを開く</button>
@@ -1452,7 +1452,7 @@ function sdHideAiModal() {
     document.getElementById('ai-modal').classList.add('hidden');
 }
 function sdOpenAiChat() {
-    window.open('https://claude.ai/public/artifacts/103f0f95-71d1-480b-86ce-427fe91e3363', '_blank');
+    window.open('chat.html', '_blank');
     sdHideAiModal();
 }
 
